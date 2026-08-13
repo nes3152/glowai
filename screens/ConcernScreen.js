@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CONCERNS, SAFETY_FLAGS } from '../src/domain/concerns';
-import { colors, gradient, radius, shadow, typography } from '../src/theme';
+import { centeredColumn, colors, gradient, radius, shadow, typography } from '../src/theme';
 
 function toggle(list, id) {
   return list.includes(id) ? list.filter((item) => item !== id) : [...list, id];
@@ -90,7 +90,7 @@ export default function ConcernScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { paddingHorizontal: 24, paddingBottom: 40 },
+  content: { ...centeredColumn, paddingHorizontal: 24, paddingBottom: 40 },
   title: { ...typography.title, color: colors.text, lineHeight: 36 },
   sub: { ...typography.caption, color: colors.textMuted, marginTop: 8, marginBottom: 18 },
   sectionTitle: { ...typography.section, color: colors.text, marginTop: 32 },

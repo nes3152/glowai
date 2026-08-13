@@ -3,7 +3,7 @@ import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-nativ
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors, gradient, radius, shadow, typography } from '../src/theme';
+import { centeredColumn, colors, gradient, radius, shadow, typography } from '../src/theme';
 
 const STEPS = [
   { icon: '📸', text: 'Take 3 selfies (front & sides)' },
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     lineHeight: 26,
   },
-  stepsContainer: { width: '100%', gap: 12 },
+  stepsContainer: { ...centeredColumn, gap: 12 },
   stepRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   },
   stepIcon: { fontSize: 20 },
   stepText: { ...typography.body, color: colors.textStrong, flex: 1 },
-  footer: { width: '100%', alignItems: 'center', gap: 10 },
+  footer: { ...centeredColumn, alignItems: 'center', gap: 10 },
   button: {
     backgroundColor: colors.accent,
     borderRadius: radius.pill,

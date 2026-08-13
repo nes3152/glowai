@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { formatPrice } from '../src/domain/money';
-import { colors, gradient, radius, shadow, typography } from '../src/theme';
+import { centeredColumn, colors, gradient, radius, shadow, typography } from '../src/theme';
 
 function label(id) {
   return id.charAt(0).toUpperCase() + id.slice(1);
@@ -35,7 +35,10 @@ export default function ResultScreen({ route, navigation }) {
   return (
     <LinearGradient colors={gradient} style={styles.container}>
       <ScrollView
-        contentContainerStyle={{ paddingTop: insets.top + 20, paddingBottom: insets.bottom + 60 }}
+        contentContainerStyle={[
+          styles.content,
+          { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 60 },
+        ]}
         showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={styles.title}>Your Skin Report ✨</Text>
@@ -179,6 +182,7 @@ export default function ResultScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  content: centeredColumn,
   emptyContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 20 },
   header: { paddingHorizontal: 24, marginBottom: 20 },
   title: { ...typography.title, color: colors.text },

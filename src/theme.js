@@ -35,6 +35,15 @@ export const spacing = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 };
 
 export const radius = { sm: 10, md: 16, lg: 20, xl: 24, pill: 30 };
 
+/** Keeps the phone-first layout readable on wide desktop browsers. */
+export const maxContentWidth = 460;
+
+export const centeredColumn = {
+  width: '100%',
+  maxWidth: maxContentWidth,
+  alignSelf: 'center',
+};
+
 /** Soft warm elevation used on cards and primary buttons. */
 export const shadow = {
   shadowColor: '#b08a80',

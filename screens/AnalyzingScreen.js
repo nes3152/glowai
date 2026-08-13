@@ -3,7 +3,7 @@ import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { analyzeSkin } from '../src/services/analysisService';
-import { colors, gradient, radius, shadow, typography } from '../src/theme';
+import { centeredColumn, colors, gradient, radius, shadow, typography } from '../src/theme';
 
 const STEPS = [
   { text: 'Scanning your skin tone...', emoji: '🔍' },
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   stepEmoji: { fontSize: 28, textAlign: 'center', marginBottom: 8 },
   stepText: { ...typography.body, color: colors.textBody, textAlign: 'center', marginBottom: 32 },
   progressTrack: {
-    width: '100%',
+    ...centeredColumn,
     height: 6,
     backgroundColor: colors.track,
     borderRadius: 3,
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   progressFill: { height: '100%', backgroundColor: colors.accent, borderRadius: 3 },
-  doneList: { alignItems: 'flex-start', width: '100%', gap: 8 },
+  doneList: { ...centeredColumn, alignItems: 'flex-start', gap: 8 },
   doneText: { fontSize: 13, color: colors.success },
   button: {
     backgroundColor: colors.accent,

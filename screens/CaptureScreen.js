@@ -10,7 +10,7 @@ import {
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors, radius, shadow, typography } from '../src/theme';
+import { centeredColumn, colors, maxContentWidth, radius, shadow, typography } from '../src/theme';
 
 export const STEPS = [
   { label: 'Front', instruction: 'Look straight at the camera', emoji: '😊' },
@@ -24,9 +24,11 @@ export default function CaptureScreen({ navigation }) {
   const [photos, setPhotos] = useState([]);
   const [isCapturing, setIsCapturing] = useState(false);
   const [error, setError] = useState(null);
+  const [pendingPhoto, setPendingPhoto] = useState(null);
   const cameraRef = useRef(null);
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
+  const frameWidth = Math.min(width, maxContentWidth) * 0.76;
 
   const takePicture = useCallback(async () => {
     if (!cameraRef.current || isCapturing) return;
@@ -34,22 +36,32 @@ export default function CaptureScreen({ navigation }) {
     setError(null);
     try {
       const photo = await cameraRef.current.takePictureAsync({ quality: 0.8 });
-      const nextPhotos = [...photos];
-      nextPhotos[step] = photo.uri;
-      setPhotos(nextPhotos);
-
-      const missing = STEPS.findIndex((_, i) => !nextPhotos[i]);
-      if (missing === -1) {
-        navigation.navigate('Concern', { photos: nextPhotos });
-      } else {
-        setStep(missing);
-      }
+      setPendingPhoto(photo.uri);
     } catch {
       setError('Could not take the photo. Please try again.');
     } finally {
       setIsCapturing(false);
     }
-  }, [isCapturing, navigation, photos, step]);
+  }, [isCapturing]);
+
+  const confirmPhoto = useCallback(() => {
+    const nextPhotos = [...photos];
+    nextPhotos[step] = pendingPhoto;
+    setPendingPhoto(null);
+    setPhotos(nextPhotos);
+
+    const missing = STEPS.findIndex((_, i) => !nextPhotos[i]);
+    if (missing === -1) {
+      navigation.navigate('Concern', { photos: nextPhotos });
+    } else {
+      setStep(missing);
+    }
+  }, [navigation, pendingPhoto, photos, step]);
+
+  const goToStep = useCallback((index) => {
+    setPendingPhoto(null);
+    setStep(index);
+  }, []);
 
   if (!permission) return <View style={styles.container} />;
 
@@ -89,33 +101,61 @@ export default function CaptureScreen({ navigation }) {
           Photo {step + 1} of {STEPS.length}
         </Text>
         <Text style={styles.stepLabel}>{current.label}</Text>
-        <Text style={styles.instruction}>{current.instruction}</Text>
+        <Text style={styles.instruction}>
+          {pendingPhoto ? 'Happy with this shot?' : current.instruction}
+        </Text>
       </View>
 
-      <View style={[styles.cameraContainer, { width: width * 0.85, height: width * 1.1 }]}>
-        <CameraView ref={cameraRef} style={styles.camera} facing="front">
-          <View style={styles.overlay}>
-            <View
-              style={[
-                styles.oval,
-                { width: width * 0.55, height: width * 0.75, borderRadius: width * 0.4 },
-              ]}
-            />
-          </View>
-        </CameraView>
+      <View
+        style={[styles.cameraContainer, { width: frameWidth, height: frameWidth * 1.25 }]}>
+        {pendingPhoto ? (
+          <Image source={{ uri: pendingPhoto }} style={styles.preview} />
+        ) : (
+          <CameraView ref={cameraRef} style={styles.camera} facing="front">
+            <View style={styles.overlay}>
+              <View
+                style={[
+                  styles.oval,
+                  {
+                    width: frameWidth * 0.64,
+                    height: frameWidth * 0.88,
+                    borderRadius: frameWidth * 0.45,
+                  },
+                ]}
+              />
+            </View>
+          </CameraView>
+        )}
       </View>
 
       {error && <Text style={styles.error}>{error}</Text>}
 
-      <TouchableOpacity
-        style={[styles.captureButton, isCapturing && styles.captureButtonBusy]}
-        accessibilityRole="button"
-        accessibilityLabel={`Take ${current.label} photo`}
-        accessibilityState={{ disabled: isCapturing }}
-        disabled={isCapturing}
-        onPress={takePicture}>
-        <View style={styles.captureInner} />
-      </TouchableOpacity>
+      {pendingPhoto ? (
+        <View style={styles.reviewActions}>
+          <TouchableOpacity
+            style={[styles.reviewButton, styles.reviewButtonSecondary]}
+            accessibilityRole="button"
+            onPress={() => setPendingPhoto(null)}>
+            <Text style={styles.reviewButtonSecondaryText}>Retake</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.reviewButton, styles.reviewButtonPrimary]}
+            accessibilityRole="button"
+            onPress={confirmPhoto}>
+            <Text style={styles.reviewButtonPrimaryText}>Use this photo</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <TouchableOpacity
+          style={[styles.captureButton, isCapturing && styles.captureButtonBusy]}
+          accessibilityRole="button"
+          accessibilityLabel={`Take ${current.label} photo`}
+          accessibilityState={{ disabled: isCapturing }}
+          disabled={isCapturing}
+          onPress={takePicture}>
+          <View style={styles.captureInner} />
+        </TouchableOpacity>
+      )}
 
       <View style={styles.thumbnails}>
         {STEPS.map((s, i) => (
@@ -125,7 +165,7 @@ export default function CaptureScreen({ navigation }) {
             accessibilityRole="button"
             accessibilityLabel={photos[i] ? `Retake ${s.label} photo` : `${s.label} photo not taken`}
             disabled={!photos[i]}
-            onPress={() => setStep(i)}>
+            onPress={() => goToStep(i)}>
             {photos[i] ? (
               <Image source={{ uri: photos[i] }} style={styles.thumbImage} />
             ) : (
@@ -140,7 +180,7 @@ export default function CaptureScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg, alignItems: 'center' },
+  container: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', ...centeredColumn },
   permissionContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -186,6 +226,22 @@ const styles = StyleSheet.create({
     ...shadow,
   },
   camera: { flex: 1 },
+  preview: { flex: 1 },
+  reviewActions: { flexDirection: 'row', gap: 12, marginTop: 22 },
+  reviewButton: {
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: radius.pill,
+    ...shadow,
+  },
+  reviewButtonPrimary: { backgroundColor: colors.accent },
+  reviewButtonPrimaryText: { color: colors.onAccent, fontSize: 15, fontWeight: '700' },
+  reviewButtonSecondary: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  reviewButtonSecondaryText: { color: colors.textStrong, fontSize: 15, fontWeight: '700' },
   overlay: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   oval: { borderWidth: 2, borderColor: 'rgba(255,255,255,0.85)', borderStyle: 'dashed' },
   error: { color: colors.accentDeep, fontSize: 13, marginTop: 12 },
