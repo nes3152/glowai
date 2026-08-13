@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CONCERNS, SAFETY_FLAGS } from '../src/domain/concerns';
-import { colors, gradient, radius } from '../src/theme';
+import { colors, gradient, radius, shadow, typography } from '../src/theme';
 
 function toggle(list, id) {
   return list.includes(id) ? list.filter((item) => item !== id) : [...list, id];
@@ -79,7 +79,7 @@ export default function ConcernScreen({ route, navigation }) {
           accessibilityState={{ disabled: concerns.length === 0 }}
           disabled={concerns.length === 0}
           onPress={() => navigation.navigate('Budget', { photos, concerns, safetyFlags })}>
-          <Text style={styles.buttonText}>
+          <Text style={[styles.buttonText, concerns.length === 0 && styles.buttonTextDisabled]}>
             {concerns.length === 0 ? 'Select at least one' : 'Continue →'}
           </Text>
         </TouchableOpacity>
@@ -91,10 +91,10 @@ export default function ConcernScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { paddingHorizontal: 24, paddingBottom: 40 },
-  title: { fontSize: 30, fontWeight: '800', color: colors.text, lineHeight: 38 },
-  sub: { fontSize: 14, color: colors.textMuted, marginTop: 8, marginBottom: 20 },
-  sectionTitle: { fontSize: 20, fontWeight: '800', color: colors.text, marginTop: 32 },
-  options: { gap: 12 },
+  title: { ...typography.title, color: colors.text, lineHeight: 36 },
+  sub: { ...typography.caption, color: colors.textMuted, marginTop: 8, marginBottom: 18 },
+  sectionTitle: { ...typography.section, color: colors.text, marginTop: 32 },
+  options: { gap: 10 },
   option: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -102,30 +102,33 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     padding: 16,
     borderWidth: 1.5,
-    borderColor: 'transparent',
+    borderColor: colors.border,
+    ...shadow,
   },
   optionSelected: { borderColor: colors.accent, backgroundColor: colors.accentSoft },
   emoji: { fontSize: 22, marginRight: 12 },
   optionLabel: { flex: 1, fontSize: 16, fontWeight: '600', color: colors.textStrong },
-  optionLabelSelected: { color: colors.text },
+  optionLabelSelected: { color: colors.accentDeep },
   check: {
     width: 22,
     height: 22,
     borderRadius: 11,
-    borderWidth: 2,
-    borderColor: '#555',
+    borderWidth: 1.5,
+    borderColor: colors.borderStrong,
     justifyContent: 'center',
     alignItems: 'center',
   },
   checkSelected: { borderColor: colors.accent, backgroundColor: colors.accent },
-  checkMark: { color: colors.text, fontSize: 12, fontWeight: '800' },
+  checkMark: { color: colors.onAccent, fontSize: 12, fontWeight: '800' },
   button: {
     marginTop: 32,
     backgroundColor: colors.accent,
     borderRadius: radius.pill,
     paddingVertical: 18,
     alignItems: 'center',
+    ...shadow,
   },
-  buttonDisabled: { backgroundColor: colors.disabled },
-  buttonText: { color: colors.text, fontSize: 17, fontWeight: '700' },
+  buttonDisabled: { backgroundColor: colors.disabled, shadowOpacity: 0, elevation: 0 },
+  buttonText: { color: colors.onAccent, fontSize: 17, fontWeight: '700', letterSpacing: 0.2 },
+  buttonTextDisabled: { color: colors.disabledText },
 });
