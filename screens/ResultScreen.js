@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { formatPrice } from '../src/domain/money';
-import { colors, gradient, radius } from '../src/theme';
+import { colors, gradient, radius, shadow, typography } from '../src/theme';
 
 function label(id) {
   return id.charAt(0).toUpperCase() + id.slice(1);
@@ -82,8 +82,10 @@ export default function ResultScreen({ route, navigation }) {
 
         <Text style={styles.sectionTitle}>Your Routine</Text>
         <Text style={styles.sectionSub}>
-          {cosmetics.length} products · {formatPrice({ amount: cosmeticsTotal, currency: 'USD' })}{' '}
-          total, inside your budget
+          {`${cosmetics.length} products · ${formatPrice({
+            amount: cosmeticsTotal,
+            currency: 'USD',
+          })} total, inside your budget`}
         </Text>
 
         {cosmetics.map((product) => (
@@ -147,7 +149,7 @@ export default function ResultScreen({ route, navigation }) {
                     <Text style={styles.productName}>{device.name}</Text>
                     <Text style={styles.productBrand}>{device.reason}</Text>
                     {device.requiresCertification && (
-                      <Text style={styles.note}>
+                      <Text style={styles.cardNote}>
                         Check that this device is certified for sale in your country.
                       </Text>
                     )}
@@ -179,16 +181,19 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   emptyContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 20 },
   header: { paddingHorizontal: 24, marginBottom: 20 },
-  title: { fontSize: 28, fontWeight: '800', color: colors.text },
-  sub: { fontSize: 14, color: colors.textMuted, marginTop: 4 },
+  title: { ...typography.title, color: colors.text },
+  sub: { ...typography.caption, color: colors.textMuted, marginTop: 4 },
   scoreCard: {
     flexDirection: 'row',
     marginHorizontal: 24,
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
     padding: 20,
     marginBottom: 28,
     gap: 16,
+    ...shadow,
   },
   scoreCircle: {
     width: 90,
@@ -199,7 +204,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  scoreNumber: { fontSize: 28, fontWeight: '800', color: colors.text },
+  scoreNumber: { fontSize: 28, fontWeight: '800', color: colors.accentDeep },
   scoreLabel: { fontSize: 10, color: colors.textMuted },
   scoreInfo: { flex: 1 },
   skinType: { fontSize: 12, color: colors.textMuted },
@@ -218,15 +223,16 @@ const styles = StyleSheet.create({
   warningBox: {
     marginHorizontal: 24,
     marginBottom: 24,
-    backgroundColor: colors.accentSoft,
-    borderRadius: radius.sm,
-    padding: 12,
+    backgroundColor: colors.warningSoft,
+    borderWidth: 1,
+    borderColor: colors.warningBorder,
+    borderRadius: radius.md,
+    padding: 14,
     gap: 6,
   },
   warningText: { color: colors.warning, fontSize: 12, lineHeight: 18 },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: '800',
+    ...typography.section,
     color: colors.text,
     paddingHorizontal: 24,
     marginTop: 12,
@@ -237,8 +243,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 24,
     marginBottom: 12,
     backgroundColor: colors.surface,
-    borderRadius: 18,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
     padding: 16,
+    ...shadow,
   },
   productTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
   productEmoji: { fontSize: 32, marginTop: 2 },
@@ -254,7 +263,7 @@ const styles = StyleSheet.create({
   badge: { fontSize: 10, color: colors.accent, fontWeight: '600' },
   productName: { fontSize: 14, fontWeight: '700', color: colors.text, lineHeight: 20 },
   productBrand: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
-  productPrice: { fontSize: 18, fontWeight: '800', color: colors.text },
+  productPrice: { fontSize: 18, fontWeight: '800', color: colors.accentDeep },
   reasonBox: {
     marginTop: 12,
     backgroundColor: colors.surfaceFaint,
@@ -263,6 +272,7 @@ const styles = StyleSheet.create({
   },
   reasonText: { fontSize: 12, color: colors.textBody, lineHeight: 18 },
   note: { fontSize: 12, color: colors.textMuted, paddingHorizontal: 24, marginBottom: 12 },
+  cardNote: { fontSize: 11, color: colors.warning, marginTop: 6, lineHeight: 16 },
   disclaimer: {
     fontSize: 11,
     color: colors.textMuted,
@@ -273,10 +283,12 @@ const styles = StyleSheet.create({
   retakeButton: {
     marginHorizontal: 24,
     marginTop: 16,
-    backgroundColor: colors.surfaceStrong,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.borderStrong,
     borderRadius: radius.pill,
     paddingVertical: 16,
     alignItems: 'center',
   },
-  retakeText: { color: colors.text, fontSize: 16, fontWeight: '700' },
+  retakeText: { color: colors.textStrong, fontSize: 16, fontWeight: '700' },
 });

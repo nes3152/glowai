@@ -3,7 +3,7 @@ import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { analyzeSkin } from '../src/services/analysisService';
-import { colors, gradient, radius } from '../src/theme';
+import { colors, gradient, radius, shadow, typography } from '../src/theme';
 
 const STEPS = [
   { text: 'Scanning your skin tone...', emoji: '🔍' },
@@ -104,7 +104,7 @@ export default function AnalyzingScreen({ route, navigation }) {
           style={[styles.button, styles.buttonSecondary]}
           accessibilityRole="button"
           onPress={() => navigation.navigate('Capture')}>
-          <Text style={styles.buttonText}>Retake photos</Text>
+          <Text style={[styles.buttonText, styles.buttonSecondaryText]}>Retake photos</Text>
         </TouchableOpacity>
       </LinearGradient>
     );
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     width: 140,
     height: 140,
     borderRadius: 70,
-    backgroundColor: colors.accentFaint,
+    backgroundColor: colors.accentSoft,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 40,
@@ -157,19 +157,22 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: 'rgba(233,69,96,0.4)',
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.accentFaint,
     justifyContent: 'center',
     alignItems: 'center',
+    ...shadow,
   },
   pulseEmoji: { fontSize: 44 },
   errorEmoji: { fontSize: 48, marginBottom: 16 },
-  title: { fontSize: 26, fontWeight: '800', color: colors.text, marginBottom: 24 },
-  stepEmoji: { fontSize: 30, textAlign: 'center', marginBottom: 8 },
-  stepText: { fontSize: 16, color: colors.textBody, textAlign: 'center', marginBottom: 32 },
+  title: { ...typography.title, color: colors.text, marginBottom: 20 },
+  stepEmoji: { fontSize: 28, textAlign: 'center', marginBottom: 8 },
+  stepText: { ...typography.body, color: colors.textBody, textAlign: 'center', marginBottom: 32 },
   progressTrack: {
     width: '100%',
     height: 6,
-    backgroundColor: colors.surfaceStrong,
+    backgroundColor: colors.track,
     borderRadius: 3,
     overflow: 'hidden',
     marginBottom: 32,
@@ -184,7 +187,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     alignItems: 'center',
     marginTop: 12,
+    ...shadow,
   },
-  buttonSecondary: { backgroundColor: colors.surfaceStrong },
-  buttonText: { color: colors.text, fontSize: 16, fontWeight: '700' },
+  buttonSecondary: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  buttonText: { color: colors.onAccent, fontSize: 16, fontWeight: '700' },
+  buttonSecondaryText: { color: colors.textStrong },
 });

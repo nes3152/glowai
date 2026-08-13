@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BUDGETS } from '../src/domain/budgets';
-import { colors, gradient, radius } from '../src/theme';
+import { colors, gradient, radius, shadow, typography } from '../src/theme';
 
 export default function BudgetScreen({ route, navigation }) {
   const { photos = [], concerns = [], safetyFlags = [] } = route.params ?? {};
@@ -54,7 +54,9 @@ export default function BudgetScreen({ route, navigation }) {
         onPress={() =>
           navigation.navigate('Analyzing', { photos, concerns, safetyFlags, budget: selected })
         }>
-        <Text style={styles.buttonText}>{selected ? 'Analyze My Skin →' : 'Select a budget'}</Text>
+        <Text style={[styles.buttonText, !selected && styles.buttonTextDisabled]}>
+          {selected ? 'Analyze My Skin →' : 'Select a budget'}
+        </Text>
       </TouchableOpacity>
     </LinearGradient>
   );
@@ -63,9 +65,9 @@ export default function BudgetScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 24, justifyContent: 'space-between' },
   header: { marginBottom: 32 },
-  title: { fontSize: 30, fontWeight: '800', color: colors.text, lineHeight: 38 },
-  sub: { fontSize: 15, color: colors.textMuted, marginTop: 8 },
-  options: { gap: 12 },
+  title: { ...typography.title, color: colors.text, lineHeight: 36 },
+  sub: { ...typography.body, color: colors.textMuted, marginTop: 8 },
+  options: { gap: 10 },
   option: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -73,31 +75,34 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     padding: 18,
     borderWidth: 1.5,
-    borderColor: 'transparent',
+    borderColor: colors.border,
+    ...shadow,
   },
   optionSelected: { borderColor: colors.accent, backgroundColor: colors.accentSoft },
-  emoji: { fontSize: 28, marginRight: 14 },
+  emoji: { fontSize: 26, marginRight: 14 },
   optionText: { flex: 1 },
   optionLabel: { fontSize: 17, fontWeight: '700', color: colors.textStrong },
-  optionLabelSelected: { color: colors.text },
+  optionLabelSelected: { color: colors.accentDeep },
   optionSub: { fontSize: 13, color: colors.textMuted, marginTop: 2 },
   radio: {
     width: 22,
     height: 22,
     borderRadius: 11,
-    borderWidth: 2,
-    borderColor: '#555',
+    borderWidth: 1.5,
+    borderColor: colors.borderStrong,
     justifyContent: 'center',
     alignItems: 'center',
   },
   radioSelected: { borderColor: colors.accent },
-  radioInner: { width: 12, height: 12, borderRadius: 6, backgroundColor: colors.accent },
+  radioInner: { width: 11, height: 11, borderRadius: 6, backgroundColor: colors.accent },
   button: {
     backgroundColor: colors.accent,
     borderRadius: radius.pill,
     paddingVertical: 18,
     alignItems: 'center',
+    ...shadow,
   },
-  buttonDisabled: { backgroundColor: colors.disabled },
-  buttonText: { color: colors.text, fontSize: 17, fontWeight: '700' },
+  buttonDisabled: { backgroundColor: colors.disabled, shadowOpacity: 0, elevation: 0 },
+  buttonText: { color: colors.onAccent, fontSize: 17, fontWeight: '700', letterSpacing: 0.2 },
+  buttonTextDisabled: { color: colors.disabledText },
 });

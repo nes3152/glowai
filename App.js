@@ -1,7 +1,9 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import { colors } from './src/theme';
 
 import WelcomeScreen from './screens/WelcomeScreen';
 import CaptureScreen from './screens/CaptureScreen';
@@ -12,10 +14,15 @@ import ResultScreen from './screens/ResultScreen';
 
 const Stack = createNativeStackNavigator();
 
+const navigationTheme = {
+  ...DefaultTheme,
+  colors: { ...DefaultTheme.colors, background: colors.bg, primary: colors.accent },
+};
+
 export default function App() {
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
+      <NavigationContainer theme={navigationTheme}>
         <Stack.Navigator
           screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
