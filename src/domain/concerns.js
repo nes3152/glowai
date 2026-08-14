@@ -1,11 +1,12 @@
+/** `short` keeps chart axis labels readable at 11px. */
 export const CONCERNS = [
-  { id: 'acne', label: 'Acne & breakouts', emoji: '🔴' },
-  { id: 'pores', label: 'Pores & texture', emoji: '🕳️' },
-  { id: 'wrinkles', label: 'Fine lines', emoji: '〰️' },
-  { id: 'dryness', label: 'Dryness', emoji: '🏜️' },
-  { id: 'oiliness', label: 'Excess oil', emoji: '💧' },
-  { id: 'pigmentation', label: 'Dark spots', emoji: '🟤' },
-  { id: 'redness', label: 'Redness', emoji: '🌡️' },
+  { id: 'acne', label: 'Acne & breakouts', short: 'Acne', emoji: '🔴' },
+  { id: 'pores', label: 'Pores & texture', short: 'Pores', emoji: '🕳️' },
+  { id: 'wrinkles', label: 'Fine lines', short: 'Lines', emoji: '〰️' },
+  { id: 'dryness', label: 'Dryness', short: 'Dryness', emoji: '🏜️' },
+  { id: 'oiliness', label: 'Excess oil', short: 'Oil', emoji: '💧' },
+  { id: 'pigmentation', label: 'Dark spots', short: 'Spots', emoji: '🟤' },
+  { id: 'redness', label: 'Redness', short: 'Redness', emoji: '🌡️' },
 ];
 
 export const CONCERN_IDS = CONCERNS.map((c) => c.id);
