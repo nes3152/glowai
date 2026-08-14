@@ -12,8 +12,8 @@ import {
 import { colors } from '../theme';
 
 const LEVELS = 5;
-const LABEL_OFFSET = 16;
-const PADDING = 48;
+const LABEL_OFFSET = 18;
+const PADDING = 44;
 /** Turns the background grid half a step so its corners sit between the axes. */
 const GRID_OFFSET_STEPS = 0.5;
 
@@ -22,13 +22,14 @@ const GRID_OFFSET_STEPS = 0.5;
  * Layout follows the bklit radar (levelled rings, ring value ticks, points on each
  * vertex); geometry lives in `src/domain/radar` so it stays testable without rendering.
  */
-export default function SkinRadarChart({ metrics, baseline, size = 280 }) {
+export default function SkinRadarChart({ metrics, baseline, size = 300 }) {
   const center = size / 2;
   const radius = center - PADDING;
   const count = metrics.length;
   const values = metrics.map((metric) => metric.value);
   const rings = ringPolygons(LEVELS, count, radius, center, GRID_OFFSET_STEPS);
-  const ticks = levelTicks(LEVELS, radius, center);
+  // The outermost tick would collide with the top axis label, so it is dropped.
+  const ticks = levelTicks(LEVELS, radius, center).slice(0, -1);
   const labels = labelPositions(count, radius, center, LABEL_OFFSET);
   const baselineValues = typeof baseline === 'number' ? new Array(count).fill(baseline) : null;
 
@@ -67,7 +68,7 @@ export default function SkinRadarChart({ metrics, baseline, size = 280 }) {
           <Polygon
             points={polygonPoints(baselineValues, radius, center)}
             fill={colors.surfaceStrong}
-            fillOpacity={0.5}
+            fillOpacity={0.7}
             stroke={colors.borderStrong}
             strokeWidth={1}
             strokeDasharray="4 4"
@@ -102,6 +103,20 @@ export default function SkinRadarChart({ metrics, baseline, size = 280 }) {
             textAnchor={labels[i].anchor}
             alignmentBaseline="middle">
             {metric.label}
+          </SvgText>
+        ))}
+
+        {metrics.map((metric, i) => (
+          <SvgText
+            key={`${metric.id}-value`}
+            x={labels[i].x}
+            y={labels[i].y + 12}
+            fill={colors.accentDeep}
+            fontSize="11"
+            fontWeight="700"
+            textAnchor={labels[i].anchor}
+            alignmentBaseline="middle">
+            {metric.value}
           </SvgText>
         ))}
       </Svg>
