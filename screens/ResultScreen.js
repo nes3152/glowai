@@ -7,7 +7,15 @@ import SkinRadarChart from '../src/components/SkinRadarChart';
 import { CONCERNS } from '../src/domain/concerns';
 import { formatPrice } from '../src/domain/money';
 import { BASELINE_SCORE } from '../src/domain/skinAnalysis';
-import { centeredColumn, colors, gradient, radius, shadow, typography } from '../src/theme';
+import {
+  centeredColumn,
+  colors,
+  fonts,
+  gradient,
+  radius,
+  shadow,
+  typography,
+} from '../src/theme';
 
 function toMetrics(scores) {
   return CONCERNS.filter((concern) => typeof scores[concern.id] === 'number').map((concern) => ({
@@ -50,7 +58,8 @@ export default function ResultScreen({ route, navigation }) {
         ]}
         showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={styles.title}>Your Skin Report ✨</Text>
+          <Text style={styles.eyebrow}>Report</Text>
+          <Text style={styles.title}>Your skin, measured.</Text>
           <Text style={styles.sub}>
             Based on your 3-angle analysis · confidence {Math.round(confidence * 100)}%
           </Text>
@@ -91,7 +100,7 @@ export default function ResultScreen({ route, navigation }) {
           <View style={styles.warningBox}>
             {warnings.map((warning) => (
               <Text key={warning} style={styles.warningText}>
-                ⚠ {warning}
+                {warning}
               </Text>
             ))}
           </View>
@@ -108,7 +117,6 @@ export default function ResultScreen({ route, navigation }) {
         {cosmetics.map((product) => (
           <View key={product.id} style={styles.productCard}>
             <View style={styles.productTop}>
-              <Text style={styles.productEmoji}>{product.emoji}</Text>
               <View style={styles.productInfo}>
                 <View style={styles.productTopRow}>
                   <Text style={styles.productStep}>{product.stepLabel}</Text>
@@ -142,7 +150,6 @@ export default function ResultScreen({ route, navigation }) {
             {supplements.map((supplement) => (
               <View key={supplement.id} style={styles.productCard}>
                 <View style={styles.productTop}>
-                  <Text style={styles.productEmoji}>{supplement.emoji}</Text>
                   <View style={styles.productInfo}>
                     <Text style={styles.productName}>{supplement.name}</Text>
                     <Text style={styles.productBrand}>{supplement.reason}</Text>
@@ -161,7 +168,6 @@ export default function ResultScreen({ route, navigation }) {
             {devices.map((device) => (
               <View key={device.id} style={styles.productCard}>
                 <View style={styles.productTop}>
-                  <Text style={styles.productEmoji}>{device.emoji}</Text>
                   <View style={styles.productInfo}>
                     <Text style={styles.productName}>{device.name}</Text>
                     <Text style={styles.productBrand}>{device.reason}</Text>
@@ -199,6 +205,7 @@ const styles = StyleSheet.create({
   content: centeredColumn,
   emptyContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 20 },
   header: { paddingHorizontal: 24, marginBottom: 20 },
+  eyebrow: { ...typography.label, color: colors.textMuted, marginBottom: 8 },
   title: { ...typography.title, color: colors.text },
   sub: { ...typography.caption, color: colors.textMuted, marginTop: 4 },
   scoreCard: {
@@ -217,29 +224,30 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
     borderRadius: 45,
-    borderWidth: 4,
-    borderColor: colors.accent,
+    borderWidth: 1,
+    borderColor: colors.text,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  scoreNumber: { fontSize: 28, fontWeight: '800', color: colors.accentDeep },
+  scoreNumber: { fontSize: 28, fontFamily: fonts.semibold, color: colors.accentDeep },
   scoreLabel: { fontSize: 10, color: colors.textMuted },
   scoreInfo: { flex: 1 },
   skinType: { fontSize: 12, color: colors.textMuted },
-  skinTypeValue: { fontSize: 18, fontWeight: '700', color: colors.text, marginBottom: 6 },
+  skinTypeValue: { fontSize: 18, fontFamily: fonts.semibold, color: colors.text, marginBottom: 6 },
   scoreHint: { fontSize: 11, color: colors.textMuted, lineHeight: 16 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8 },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: colors.accentSoft,
+    borderWidth: 1,
+    borderColor: colors.borderStrong,
     borderRadius: radius.pill,
     paddingVertical: 6,
     paddingHorizontal: 12,
   },
-  chipLabel: { fontSize: 12, color: colors.accentDeep, fontWeight: '700' },
-  chipValue: { fontSize: 12, color: colors.textBody, fontWeight: '600' },
+  chipLabel: { fontSize: 12, color: colors.accentDeep, fontFamily: fonts.semibold },
+  chipValue: { fontSize: 12, color: colors.textBody, fontFamily: fonts.medium },
   warningBox: {
     marginHorizontal: 24,
     marginBottom: 24,
@@ -270,20 +278,20 @@ const styles = StyleSheet.create({
     ...shadow,
   },
   productTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
-  productEmoji: { fontSize: 32, marginTop: 2 },
   productInfo: { flex: 1 },
   productTopRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 2 },
-  productStep: { fontSize: 11, color: colors.accent, fontWeight: '700', textTransform: 'uppercase' },
+  productStep: { ...typography.label, color: colors.textMuted },
   badgeContainer: {
-    backgroundColor: colors.accentFaint,
+    borderWidth: 1,
+    borderColor: colors.border,
     paddingHorizontal: 8,
     paddingVertical: 2,
-    borderRadius: 8,
+    borderRadius: radius.pill,
   },
-  badge: { fontSize: 10, color: colors.accent, fontWeight: '600' },
-  productName: { fontSize: 14, fontWeight: '700', color: colors.text, lineHeight: 20 },
+  badge: { fontSize: 10, color: colors.textBody, fontFamily: fonts.medium },
+  productName: { fontSize: 15, fontFamily: fonts.medium, color: colors.text, lineHeight: 21 },
   productBrand: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
-  productPrice: { fontSize: 18, fontWeight: '800', color: colors.accentDeep },
+  productPrice: { fontSize: 18, fontFamily: fonts.semibold, color: colors.accentDeep },
   reasonBox: {
     marginTop: 12,
     backgroundColor: colors.surfaceFaint,
@@ -310,5 +318,5 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
   },
-  retakeText: { color: colors.textStrong, fontSize: 16, fontWeight: '700' },
+  retakeText: { color: colors.textStrong, fontSize: 16, fontFamily: fonts.semibold },
 });
