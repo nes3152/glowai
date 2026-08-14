@@ -3,11 +3,17 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import SkinRadarChart from '../src/components/SkinRadarChart';
+import { CONCERNS } from '../src/domain/concerns';
 import { formatPrice } from '../src/domain/money';
 import { centeredColumn, colors, gradient, radius, shadow, typography } from '../src/theme';
 
-function label(id) {
-  return id.charAt(0).toUpperCase() + id.slice(1);
+function toMetrics(scores) {
+  return CONCERNS.filter((concern) => typeof scores[concern.id] === 'number').map((concern) => ({
+    id: concern.id,
+    label: concern.short,
+    value: scores[concern.id],
+  }));
 }
 
 export default function ResultScreen({ route, navigation }) {
@@ -31,6 +37,8 @@ export default function ResultScreen({ route, navigation }) {
   const { scores, score, skinType, confidence, recommendations } = analysis;
   const { cosmetics, cosmeticsTotal, skippedSteps, warnings, supplements, devices } =
     recommendations;
+  const metrics = toMetrics(scores);
+  const focus = [...metrics].sort((a, b) => b.value - a.value).slice(0, 3);
 
   return (
     <LinearGradient colors={gradient} style={styles.container}>
@@ -48,29 +56,34 @@ export default function ResultScreen({ route, navigation }) {
         </View>
 
         <View style={styles.scoreCard}>
-          <View style={styles.scoreCircle}>
-            <Text style={styles.scoreNumber}>{score}</Text>
-            <Text style={styles.scoreLabel}>Skin Score</Text>
-          </View>
-          <View style={styles.scoreInfo}>
-            <Text style={styles.skinType}>Skin Type</Text>
-            <Text style={styles.skinTypeValue}>{skinType}</Text>
-            <View style={styles.bars}>
-              {Object.entries(scores).map(([key, val]) => (
-                <View key={key} style={styles.barRow}>
-                  <Text style={styles.barLabel}>{label(key)}</Text>
-                  <View style={styles.barTrack}>
-                    <View
-                      style={[
-                        styles.barFill,
-                        { width: `${val}%`, backgroundColor: val > 60 ? colors.accent : colors.success },
-                      ]}
-                    />
-                  </View>
-                </View>
-              ))}
+          <View style={styles.scoreRow}>
+            <View style={styles.scoreCircle}>
+              <Text style={styles.scoreNumber}>{score}</Text>
+              <Text style={styles.scoreLabel}>Skin Score</Text>
+            </View>
+            <View style={styles.scoreInfo}>
+              <Text style={styles.skinType}>Skin Type</Text>
+              <Text style={styles.skinTypeValue}>{skinType}</Text>
+              <Text style={styles.scoreHint}>
+                The chart maps how much attention each area needs — a wider shape means more work
+                for your routine.
+              </Text>
             </View>
           </View>
+
+          {metrics.length > 0 && (
+            <>
+              <SkinRadarChart metrics={metrics} />
+              <View style={styles.chips}>
+                {focus.map((metric) => (
+                  <View key={metric.id} style={styles.chip}>
+                    <Text style={styles.chipLabel}>{metric.label}</Text>
+                    <Text style={styles.chipValue}>{metric.value}</Text>
+                  </View>
+                ))}
+              </View>
+            </>
+          )}
         </View>
 
         {warnings.length > 0 && (
@@ -188,7 +201,6 @@ const styles = StyleSheet.create({
   title: { ...typography.title, color: colors.text },
   sub: { ...typography.caption, color: colors.textMuted, marginTop: 4 },
   scoreCard: {
-    flexDirection: 'row',
     marginHorizontal: 24,
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
@@ -199,6 +211,7 @@ const styles = StyleSheet.create({
     gap: 16,
     ...shadow,
   },
+  scoreRow: { flexDirection: 'row', gap: 16 },
   scoreCircle: {
     width: 90,
     height: 90,
@@ -212,18 +225,20 @@ const styles = StyleSheet.create({
   scoreLabel: { fontSize: 10, color: colors.textMuted },
   scoreInfo: { flex: 1 },
   skinType: { fontSize: 12, color: colors.textMuted },
-  skinTypeValue: { fontSize: 18, fontWeight: '700', color: colors.text, marginBottom: 10 },
-  bars: { gap: 6 },
-  barRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  barLabel: { fontSize: 11, color: colors.textMuted, width: 70 },
-  barTrack: {
-    flex: 1,
-    height: 4,
-    backgroundColor: colors.track,
-    borderRadius: 2,
-    overflow: 'hidden',
+  skinTypeValue: { fontSize: 18, fontWeight: '700', color: colors.text, marginBottom: 6 },
+  scoreHint: { fontSize: 11, color: colors.textMuted, lineHeight: 16 },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8 },
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: colors.accentSoft,
+    borderRadius: radius.pill,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
   },
-  barFill: { height: '100%', borderRadius: 2 },
+  chipLabel: { fontSize: 12, color: colors.accentDeep, fontWeight: '700' },
+  chipValue: { fontSize: 12, color: colors.textBody, fontWeight: '600' },
   warningBox: {
     marginHorizontal: 24,
     marginBottom: 24,
