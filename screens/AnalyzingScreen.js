@@ -3,15 +3,25 @@ import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { analyzeSkin } from '../src/services/analysisService';
-import { centeredColumn, colors, gradient, radius, shadow, typography } from '../src/theme';
+import {
+  centeredColumn,
+  colors,
+  fonts,
+  gradient,
+  radius,
+  shadow,
+  typography,
+} from '../src/theme';
 
 const STEPS = [
-  { text: 'Scanning your skin tone...', emoji: '🔍' },
-  { text: 'Detecting skin concerns...', emoji: '🧬' },
-  { text: 'Analyzing ingredients...', emoji: '🔬' },
-  { text: 'Finding K-Beauty matches...', emoji: '🇰🇷' },
-  { text: 'Building your routine...', emoji: '✨' },
+  { text: 'Scanning your skin tone...' },
+  { text: 'Detecting skin concerns...' },
+  { text: 'Analyzing ingredients...' },
+  { text: 'Finding K-Beauty matches...' },
+  { text: 'Building your routine...' },
 ];
+
+const stepNumber = (index) => String(index + 1).padStart(2, '0');
 
 /** Keeps the animation on screen long enough to read, even on a fast response. */
 export const MIN_DISPLAY_MS = 1800;
@@ -91,7 +101,7 @@ export default function AnalyzingScreen({ route, navigation }) {
   if (error) {
     return (
       <LinearGradient colors={gradient} style={styles.container}>
-        <Text style={styles.errorEmoji}>😕</Text>
+        <Text style={styles.eyebrow}>Error</Text>
         <Text style={styles.title}>We couldn’t finish</Text>
         <Text style={styles.stepText}>{error.message}</Text>
         <TouchableOpacity
@@ -114,14 +124,16 @@ export default function AnalyzingScreen({ route, navigation }) {
     <LinearGradient colors={gradient} style={styles.container}>
       <Animated.View style={[styles.pulseOuter, { transform: [{ scale: pulseAnim }] }]}>
         <View style={styles.pulseInner}>
-          <Text style={styles.pulseEmoji}>🧴</Text>
+          <Text style={styles.pulseStep}>
+            {stepNumber(currentStep)}
+            <Text style={styles.pulseStepTotal}>/{stepNumber(STEPS.length - 1)}</Text>
+          </Text>
         </View>
       </Animated.View>
 
       <Text style={styles.title}>Analyzing your skin</Text>
 
       <Animated.View style={{ opacity: fadeAnim }}>
-        <Text style={styles.stepEmoji}>{STEPS[currentStep].emoji}</Text>
         <Text style={styles.stepText} accessibilityLiveRegion="polite">
           {STEPS[currentStep].text}
         </Text>
@@ -134,7 +146,7 @@ export default function AnalyzingScreen({ route, navigation }) {
       <View style={styles.doneList}>
         {STEPS.slice(0, currentStep).map((s) => (
           <Text key={s.text} style={styles.doneText}>
-            ✓ {s.text}
+            — {s.text}
           </Text>
         ))}
       </View>
@@ -148,7 +160,7 @@ const styles = StyleSheet.create({
     width: 140,
     height: 140,
     borderRadius: 70,
-    backgroundColor: colors.accentSoft,
+    backgroundColor: colors.surfaceStrong,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 40,
@@ -159,27 +171,27 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.accentFaint,
+    borderColor: colors.border,
     justifyContent: 'center',
     alignItems: 'center',
     ...shadow,
   },
-  pulseEmoji: { fontSize: 44 },
-  errorEmoji: { fontSize: 48, marginBottom: 16 },
+  pulseStep: { fontFamily: fonts.medium, fontSize: 26, color: colors.text, letterSpacing: -0.5 },
+  pulseStepTotal: { color: colors.textMuted },
+  eyebrow: { ...typography.label, color: colors.textMuted, marginBottom: 10 },
   title: { ...typography.title, color: colors.text, marginBottom: 20 },
-  stepEmoji: { fontSize: 28, textAlign: 'center', marginBottom: 8 },
   stepText: { ...typography.body, color: colors.textBody, textAlign: 'center', marginBottom: 32 },
   progressTrack: {
     ...centeredColumn,
-    height: 6,
+    height: 2,
     backgroundColor: colors.track,
-    borderRadius: 3,
+    borderRadius: 1,
     overflow: 'hidden',
     marginBottom: 32,
   },
-  progressFill: { height: '100%', backgroundColor: colors.accent, borderRadius: 3 },
+  progressFill: { height: '100%', backgroundColor: colors.text },
   doneList: { ...centeredColumn, alignItems: 'flex-start', gap: 8 },
-  doneText: { fontSize: 13, color: colors.success },
+  doneText: { fontSize: 13, color: colors.textMuted },
   button: {
     backgroundColor: colors.accent,
     borderRadius: radius.pill,
@@ -194,6 +206,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  buttonText: { color: colors.onAccent, fontSize: 16, fontWeight: '700' },
+  buttonText: { color: colors.onAccent, fontSize: 16, fontFamily: fonts.semibold },
   buttonSecondaryText: { color: colors.textStrong },
 });

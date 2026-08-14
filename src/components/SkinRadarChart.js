@@ -9,7 +9,7 @@ import {
   radarPoint,
   ringPolygons,
 } from '../domain/radar';
-import { colors } from '../theme';
+import { colors, fonts } from '../theme';
 
 const LEVELS = 5;
 const LABEL_OFFSET = 18;
@@ -58,6 +58,7 @@ export default function SkinRadarChart({ metrics, baseline, size = 300 }) {
             y={tick.y}
             fill={colors.textMuted}
             fontSize="8"
+            fontFamily={fonts.regular}
             textAnchor="start"
             alignmentBaseline="middle">
             {tick.value}
@@ -99,7 +100,7 @@ export default function SkinRadarChart({ metrics, baseline, size = 300 }) {
             y={labels[i].y}
             fill={colors.textBody}
             fontSize="11"
-            fontWeight="600"
+            fontFamily={fonts.medium}
             textAnchor={labels[i].anchor}
             alignmentBaseline="middle">
             {metric.label}
@@ -113,7 +114,7 @@ export default function SkinRadarChart({ metrics, baseline, size = 300 }) {
             y={labels[i].y + 12}
             fill={colors.accentDeep}
             fontSize="11"
-            fontWeight="700"
+            fontFamily={fonts.semibold}
             textAnchor={labels[i].anchor}
             alignmentBaseline="middle">
             {metric.value}
@@ -153,5 +154,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.borderStrong,
   },
-  legendText: { fontSize: 11, color: colors.textMuted, fontWeight: '600' },
+  legendText: { fontSize: 11, color: colors.textMuted, fontFamily: fonts.medium },
 });
