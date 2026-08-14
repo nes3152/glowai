@@ -2,6 +2,7 @@ import {
   RADAR_MAX,
   axisAngle,
   labelPositions,
+  levelTicks,
   polygonPoints,
   radarPoint,
   ringPolygons,
@@ -16,6 +17,11 @@ describe('axisAngle', () => {
     const count = 6;
     const step = axisAngle(1, count) - axisAngle(0, count);
     expect(step).toBeCloseTo((2 * Math.PI) / count);
+  });
+
+  it('offsets the whole ring by a fraction of one step', () => {
+    const count = 4;
+    expect(axisAngle(0, count, 0.5)).toBeCloseTo(axisAngle(0, count) + Math.PI / count);
   });
 
   it('rejects an empty chart', () => {
@@ -55,6 +61,24 @@ describe('ringPolygons', () => {
     expect(rings).toHaveLength(4);
     expect(rings[0]).toBe(polygonPoints([100, 100, 100, 100], 50, 60));
     expect(rings[3]).toBe(polygonPoints([25, 25, 25, 25], 50, 60));
+  });
+
+  it('can rotate the grid between the axes', () => {
+    const [outer] = ringPolygons(1, 4, 50, 60, 0.5);
+    expect(outer).toBe(polygonPoints([100, 100, 100, 100], 50, 60, 0.5));
+    expect(outer).not.toBe(polygonPoints([100, 100, 100, 100], 50, 60));
+  });
+});
+
+describe('levelTicks', () => {
+  it('labels each ring up the top axis', () => {
+    expect(levelTicks(5, 50, 60)).toEqual([
+      { value: 20, y: 50 },
+      { value: 40, y: 40 },
+      { value: 60, y: 30 },
+      { value: 80, y: 20 },
+      { value: 100, y: 10 },
+    ]);
   });
 });
 

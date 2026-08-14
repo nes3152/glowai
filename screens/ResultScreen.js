@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SkinRadarChart from '../src/components/SkinRadarChart';
 import { CONCERNS } from '../src/domain/concerns';
 import { formatPrice } from '../src/domain/money';
+import { BASELINE_SCORE } from '../src/domain/skinAnalysis';
 import { centeredColumn, colors, gradient, radius, shadow, typography } from '../src/theme';
 
 function toMetrics(scores) {
@@ -73,7 +74,7 @@ export default function ResultScreen({ route, navigation }) {
 
           {metrics.length > 0 && (
             <>
-              <SkinRadarChart metrics={metrics} />
+              <SkinRadarChart metrics={metrics} baseline={BASELINE_SCORE} />
               <View style={styles.chips}>
                 {focus.map((metric) => (
                   <View key={metric.id} style={styles.chip}>
