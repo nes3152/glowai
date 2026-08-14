@@ -12,6 +12,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { centeredColumn, colors, maxContentWidth, radius, shadow, typography } from '../src/theme';
 
+/** Ignores clicks that land on the review buttons as the tail of a shutter double-tap. */
+export const REVIEW_ARM_MS = 400;
+
+function isDoubleTapEcho(shownAt) {
+  return Date.now() - shownAt < REVIEW_ARM_MS;
+}
+
 export const STEPS = [
   { label: 'Front', instruction: 'Look straight at the camera', emoji: '😊' },
   { label: 'Left Side', instruction: 'Turn your head slowly to the left', emoji: '😏' },
@@ -25,6 +32,7 @@ export default function CaptureScreen({ navigation }) {
   const [isCapturing, setIsCapturing] = useState(false);
   const [error, setError] = useState(null);
   const [pendingPhoto, setPendingPhoto] = useState(null);
+  const pendingShownAt = useRef(0);
   const cameraRef = useRef(null);
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -36,6 +44,7 @@ export default function CaptureScreen({ navigation }) {
     setError(null);
     try {
       const photo = await cameraRef.current.takePictureAsync({ quality: 0.8 });
+      pendingShownAt.current = Date.now();
       setPendingPhoto(photo.uri);
     } catch {
       setError('Could not take the photo. Please try again.');
@@ -45,6 +54,7 @@ export default function CaptureScreen({ navigation }) {
   }, [isCapturing]);
 
   const confirmPhoto = useCallback(() => {
+    if (isDoubleTapEcho(pendingShownAt.current)) return;
     const nextPhotos = [...photos];
     nextPhotos[step] = pendingPhoto;
     setPendingPhoto(null);
@@ -57,6 +67,11 @@ export default function CaptureScreen({ navigation }) {
       setStep(missing);
     }
   }, [navigation, pendingPhoto, photos, step]);
+
+  const retakePhoto = useCallback(() => {
+    if (isDoubleTapEcho(pendingShownAt.current)) return;
+    setPendingPhoto(null);
+  }, []);
 
   const goToStep = useCallback((index) => {
     setPendingPhoto(null);
@@ -135,7 +150,7 @@ export default function CaptureScreen({ navigation }) {
           <TouchableOpacity
             style={[styles.reviewButton, styles.reviewButtonSecondary]}
             accessibilityRole="button"
-            onPress={() => setPendingPhoto(null)}>
+            onPress={retakePhoto}>
             <Text style={styles.reviewButtonSecondaryText}>Retake</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -227,7 +242,7 @@ const styles = StyleSheet.create({
   },
   camera: { flex: 1 },
   preview: { flex: 1 },
-  reviewActions: { flexDirection: 'row', gap: 12, marginTop: 22 },
+  reviewActions: { flexDirection: 'row', gap: 12, marginTop: 44 },
   reviewButton: {
     paddingVertical: 14,
     paddingHorizontal: 24,
