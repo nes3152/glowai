@@ -1,39 +1,48 @@
+/** Switzer (Fontshare, free licence) — loaded in App.js, files in assets/fonts. */
+export const fonts = {
+  light: 'Switzer-Light',
+  regular: 'Switzer-Regular',
+  medium: 'Switzer-Medium',
+  semibold: 'Switzer-Semibold',
+};
+
+/** Monochrome palette: ink on off-white, hairline borders, no colour accents. */
 export const colors = {
-  accent: '#d4718c',
-  accentDeep: '#b85273',
-  accentSoft: '#fdeef2',
-  accentFaint: '#f8e1e8',
+  accent: '#0f1012',
+  accentDeep: '#000000',
+  accentSoft: '#f2f2f4',
+  accentFaint: '#e6e6e8',
   onAccent: '#ffffff',
 
-  bg: '#fffaf7',
-  text: '#3b2b30',
-  textStrong: '#4c383e',
-  textBody: '#6d565c',
-  textMuted: '#9c8a8f',
+  bg: '#f8f8f8',
+  text: '#0f1012',
+  textStrong: '#1d1e20',
+  textBody: '#4b4c4f',
+  textMuted: '#8e8f94',
 
   surface: '#ffffff',
-  surfaceStrong: '#f7ece7',
-  surfaceFaint: '#fbf5f2',
-  border: '#f0e3dd',
-  borderStrong: '#e3d2cc',
+  surfaceStrong: '#efefef',
+  surfaceFaint: '#f8f8f8',
+  border: '#e6e6e8',
+  borderStrong: '#d5d5d9',
 
-  track: '#efe3df',
-  disabled: '#e8dcd7',
-  disabledText: '#a3918c',
-  success: '#4f9d7c',
-  warning: '#a86a1f',
-  warningSoft: '#fdf2e2',
-  warningBorder: '#f2ddbd',
+  track: '#e6e6e8',
+  disabled: '#e6e6e8',
+  disabledText: '#a9aaae',
+  success: '#00b982',
+  warning: '#1d1e20',
+  warningSoft: '#f2f2f4',
+  warningBorder: '#e6e6e8',
 
-  dark: '#241b1e',
+  dark: '#0f1012',
   onDark: '#ffffff',
 };
 
-export const gradient = ['#fffdfb', '#fdf3ee', '#fbe8ea'];
+export const gradient = ['#ffffff', '#f8f8f8', '#f2f2f4'];
 
 export const spacing = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 };
 
-export const radius = { sm: 10, md: 16, lg: 20, xl: 24, pill: 30 };
+export const radius = { sm: 8, md: 12, lg: 14, xl: 16, pill: 999 };
 
 /** Keeps the phone-first layout readable on wide desktop browsers. */
 export const maxContentWidth = 460;
@@ -44,19 +53,26 @@ export const centeredColumn = {
   alignSelf: 'center',
 };
 
-/** Soft warm elevation used on cards and primary buttons. */
+/** Flat design: cards are separated by hairline borders, not elevation. */
 export const shadow = {
-  shadowColor: '#b08a80',
-  shadowOpacity: 0.16,
-  shadowRadius: 12,
-  shadowOffset: { width: 0, height: 4 },
-  elevation: 2,
+  shadowColor: 'transparent',
+  shadowOpacity: 0,
+  shadowRadius: 0,
+  shadowOffset: { width: 0, height: 0 },
+  elevation: 0,
 };
 
 export const typography = {
-  display: { fontSize: 34, fontWeight: '800', letterSpacing: -0.5 },
-  title: { fontSize: 28, fontWeight: '800', letterSpacing: -0.4 },
-  section: { fontSize: 19, fontWeight: '700', letterSpacing: -0.2 },
-  body: { fontSize: 15, fontWeight: '500' },
-  caption: { fontSize: 13, fontWeight: '500' },
+  display: { fontFamily: fonts.medium, fontSize: 36, letterSpacing: -1.1 },
+  title: { fontFamily: fonts.medium, fontSize: 28, letterSpacing: -0.8 },
+  section: { fontFamily: fonts.medium, fontSize: 18, letterSpacing: -0.4 },
+  body: { fontFamily: fonts.regular, fontSize: 15, letterSpacing: -0.1 },
+  caption: { fontFamily: fonts.regular, fontSize: 13 },
+  /** Tiny tracked-out caps used above sections, the way augen.pro labels blocks. */
+  label: {
+    fontFamily: fonts.medium,
+    fontSize: 11,
+    letterSpacing: 1.4,
+    textTransform: 'uppercase',
+  },
 };

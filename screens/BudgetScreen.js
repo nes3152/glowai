@@ -4,7 +4,15 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BUDGETS } from '../src/domain/budgets';
-import { centeredColumn, colors, gradient, radius, shadow, typography } from '../src/theme';
+import {
+  centeredColumn,
+  colors,
+  fonts,
+  gradient,
+  radius,
+  shadow,
+  typography,
+} from '../src/theme';
 
 export default function BudgetScreen({ route, navigation }) {
   const { photos = [], concerns = [], safetyFlags = [] } = route.params ?? {};
@@ -16,6 +24,7 @@ export default function BudgetScreen({ route, navigation }) {
       colors={gradient}
       style={[styles.container, { paddingTop: insets.top + 30, paddingBottom: insets.bottom + 24 }]}>
       <View style={styles.header}>
+        <Text style={styles.eyebrow}>Step 03</Text>
         <Text style={styles.title}>What’s your monthly{'\n'}skincare budget?</Text>
         <Text style={styles.sub}>Your routine total will stay inside this range</Text>
       </View>
@@ -31,7 +40,6 @@ export default function BudgetScreen({ route, navigation }) {
               accessibilityState={{ selected: isSelected }}
               accessibilityLabel={`${item.label}, ${item.sub}`}
               onPress={() => setSelected(item.id)}>
-              <Text style={styles.emoji}>{item.emoji}</Text>
               <View style={styles.optionText}>
                 <Text style={[styles.optionLabel, isSelected && styles.optionLabelSelected]}>
                   {item.label}
@@ -65,7 +73,8 @@ export default function BudgetScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 24, justifyContent: 'space-between' },
   header: { ...centeredColumn, marginBottom: 32 },
-  title: { ...typography.title, color: colors.text, lineHeight: 36 },
+  eyebrow: { ...typography.label, color: colors.textMuted, marginBottom: 10 },
+  title: { ...typography.title, color: colors.text, lineHeight: 34 },
   sub: { ...typography.body, color: colors.textMuted, marginTop: 8 },
   options: { ...centeredColumn, gap: 10 },
   option: {
@@ -74,26 +83,25 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.md,
     padding: 18,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.border,
     ...shadow,
   },
-  optionSelected: { borderColor: colors.accent, backgroundColor: colors.accentSoft },
-  emoji: { fontSize: 26, marginRight: 14 },
+  optionSelected: { borderColor: colors.text },
   optionText: { flex: 1 },
-  optionLabel: { fontSize: 17, fontWeight: '700', color: colors.textStrong },
+  optionLabel: { fontSize: 17, fontFamily: fonts.medium, color: colors.textStrong },
   optionLabelSelected: { color: colors.accentDeep },
   optionSub: { fontSize: 13, color: colors.textMuted, marginTop: 2 },
   radio: {
     width: 22,
     height: 22,
     borderRadius: 11,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.borderStrong,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  radioSelected: { borderColor: colors.accent },
+  radioSelected: { borderColor: colors.text },
   radioInner: { width: 11, height: 11, borderRadius: 6, backgroundColor: colors.accent },
   button: {
     ...centeredColumn,
@@ -104,6 +112,6 @@ const styles = StyleSheet.create({
     ...shadow,
   },
   buttonDisabled: { backgroundColor: colors.disabled, shadowOpacity: 0, elevation: 0 },
-  buttonText: { color: colors.onAccent, fontSize: 17, fontWeight: '700', letterSpacing: 0.2 },
+  buttonText: { color: colors.onAccent, fontSize: 17, fontFamily: fonts.semibold, letterSpacing: 0.2 },
   buttonTextDisabled: { color: colors.disabledText },
 });
