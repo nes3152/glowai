@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BUDGETS } from '../src/domain/budgets';
-import { colors, gradient, radius, shadow, typography } from '../src/theme';
+import { centeredColumn, colors, gradient, radius, shadow, typography } from '../src/theme';
 
 export default function BudgetScreen({ route, navigation }) {
   const { photos = [], concerns = [], safetyFlags = [] } = route.params ?? {};
@@ -64,10 +64,10 @@ export default function BudgetScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 24, justifyContent: 'space-between' },
-  header: { marginBottom: 32 },
+  header: { ...centeredColumn, marginBottom: 32 },
   title: { ...typography.title, color: colors.text, lineHeight: 36 },
   sub: { ...typography.body, color: colors.textMuted, marginTop: 8 },
-  options: { gap: 10 },
+  options: { ...centeredColumn, gap: 10 },
   option: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
   radioSelected: { borderColor: colors.accent },
   radioInner: { width: 11, height: 11, borderRadius: 6, backgroundColor: colors.accent },
   button: {
+    ...centeredColumn,
     backgroundColor: colors.accent,
     borderRadius: radius.pill,
     paddingVertical: 18,
