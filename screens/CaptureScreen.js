@@ -10,7 +10,15 @@ import {
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { centeredColumn, colors, maxContentWidth, radius, shadow, typography } from '../src/theme';
+import {
+  centeredColumn,
+  colors,
+  fonts,
+  maxContentWidth,
+  radius,
+  shadow,
+  typography,
+} from '../src/theme';
 
 /** Ignores clicks that land on the review buttons as the tail of a shutter double-tap. */
 export const REVIEW_ARM_MS = 400;
@@ -20,9 +28,9 @@ function isDoubleTapEcho(shownAt) {
 }
 
 export const STEPS = [
-  { label: 'Front', instruction: 'Look straight at the camera', emoji: '😊' },
-  { label: 'Left Side', instruction: 'Turn your head slowly to the left', emoji: '😏' },
-  { label: 'Right Side', instruction: 'Turn your head slowly to the right', emoji: '😏' },
+  { label: 'Front', instruction: 'Look straight at the camera' },
+  { label: 'Left Side', instruction: 'Turn your head slowly to the left' },
+  { label: 'Right Side', instruction: 'Turn your head slowly to the right' },
 ];
 
 export default function CaptureScreen({ navigation }) {
@@ -184,7 +192,7 @@ export default function CaptureScreen({ navigation }) {
             {photos[i] ? (
               <Image source={{ uri: photos[i] }} style={styles.thumbImage} />
             ) : (
-              <Text style={styles.thumbEmoji}>{s.emoji}</Text>
+              <Text style={styles.thumbIndex}>{`0${i + 1}`}</Text>
             )}
           </TouchableOpacity>
         ))}
@@ -217,19 +225,13 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     ...shadow,
   },
-  permissionButtonText: { color: colors.onAccent, fontSize: 16, fontWeight: '700' },
+  permissionButtonText: { color: colors.onAccent, fontSize: 16, fontFamily: fonts.semibold },
   permissionHint: { color: colors.textMuted, fontSize: 13, textAlign: 'center', marginTop: 20 },
   progressBar: { flexDirection: 'row', gap: 6, marginBottom: 18 },
-  dot: { width: 34, height: 4, borderRadius: 2, backgroundColor: colors.track },
-  dotActive: { backgroundColor: colors.accent },
+  dot: { width: 34, height: 2, backgroundColor: colors.track },
+  dotActive: { backgroundColor: colors.text },
   header: { alignItems: 'center', marginBottom: 18 },
-  stepCount: {
-    color: colors.accent,
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 0.6,
-    textTransform: 'uppercase',
-  },
+  stepCount: { ...typography.label, color: colors.textMuted },
   stepLabel: { ...typography.title, color: colors.text, marginTop: 6 },
   instruction: { ...typography.caption, color: colors.textBody, marginTop: 6 },
   cameraContainer: {
@@ -250,22 +252,22 @@ const styles = StyleSheet.create({
     ...shadow,
   },
   reviewButtonPrimary: { backgroundColor: colors.accent },
-  reviewButtonPrimaryText: { color: colors.onAccent, fontSize: 15, fontWeight: '700' },
+  reviewButtonPrimaryText: { color: colors.onAccent, fontSize: 15, fontFamily: fonts.semibold },
   reviewButtonSecondary: {
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
   },
-  reviewButtonSecondaryText: { color: colors.textStrong, fontSize: 15, fontWeight: '700' },
+  reviewButtonSecondaryText: { color: colors.textStrong, fontSize: 15, fontFamily: fonts.semibold },
   overlay: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  oval: { borderWidth: 2, borderColor: 'rgba(255,255,255,0.85)', borderStyle: 'dashed' },
-  error: { color: colors.accentDeep, fontSize: 13, marginTop: 12 },
+  oval: { borderWidth: 1, borderColor: 'rgba(255,255,255,0.8)' },
+  error: { color: colors.text, fontSize: 13, marginTop: 12 },
   captureButton: {
     width: 76,
     height: 76,
     borderRadius: 38,
-    borderWidth: 3,
-    borderColor: colors.accentFaint,
+    borderWidth: 1,
+    borderColor: colors.borderStrong,
     backgroundColor: colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
@@ -273,20 +275,20 @@ const styles = StyleSheet.create({
     ...shadow,
   },
   captureButtonBusy: { opacity: 0.5 },
-  captureInner: { width: 58, height: 58, borderRadius: 29, backgroundColor: colors.accent },
+  captureInner: { width: 58, height: 58, borderRadius: 29, backgroundColor: colors.text },
   thumbnails: { flexDirection: 'row', gap: 12, marginTop: 18 },
   thumb: {
     width: 52,
     height: 52,
-    borderRadius: 14,
-    backgroundColor: colors.surfaceStrong,
+    borderRadius: radius.sm,
+    backgroundColor: colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.border,
   },
-  thumbDone: { borderColor: colors.accent },
-  thumbImage: { width: 48, height: 48, borderRadius: 12 },
-  thumbEmoji: { fontSize: 22 },
+  thumbDone: { borderColor: colors.text },
+  thumbImage: { width: 48, height: 48, borderRadius: radius.sm - 2 },
+  thumbIndex: { ...typography.label, color: colors.textMuted },
   retakeHint: { color: colors.textMuted, fontSize: 12, marginTop: 10 },
 });

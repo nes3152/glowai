@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { colors } from './src/theme';
@@ -14,12 +16,28 @@ import ResultScreen from './screens/ResultScreen';
 
 const Stack = createNativeStackNavigator();
 
+SplashScreen.preventAutoHideAsync();
+
 const navigationTheme = {
   ...DefaultTheme,
   colors: { ...DefaultTheme.colors, background: colors.bg, primary: colors.accent },
 };
 
 export default function App() {
+  const [fontsLoaded, fontError] = useFonts({
+    'Switzer-Light': require('./assets/fonts/Switzer-Light.ttf'),
+    'Switzer-Regular': require('./assets/fonts/Switzer-Regular.ttf'),
+    'Switzer-Medium': require('./assets/fonts/Switzer-Medium.ttf'),
+    'Switzer-Semibold': require('./assets/fonts/Switzer-Semibold.ttf'),
+  });
+
+  useEffect(() => {
+    if (fontsLoaded || fontError) SplashScreen.hideAsync();
+  }, [fontsLoaded, fontError]);
+
+  // Render anyway on a font error so a missing file never blocks the app.
+  if (!fontsLoaded && !fontError) return null;
+
   return (
     <SafeAreaProvider>
       <NavigationContainer theme={navigationTheme}>

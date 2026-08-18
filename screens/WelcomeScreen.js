@@ -3,12 +3,20 @@ import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-nativ
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { centeredColumn, colors, gradient, radius, shadow, typography } from '../src/theme';
+import {
+  centeredColumn,
+  colors,
+  fonts,
+  gradient,
+  radius,
+  shadow,
+  typography,
+} from '../src/theme';
 
 const STEPS = [
-  { icon: '📸', text: 'Take 3 selfies (front & sides)' },
-  { icon: '🔬', text: 'AI analyzes your skin' },
-  { icon: '💄', text: 'Get your personalized routine' },
+  'Take 3 selfies (front & sides)',
+  'We measure seven skin markers',
+  'Get your routine, in budget',
 ];
 
 export default function WelcomeScreen({ navigation }) {
@@ -21,25 +29,15 @@ export default function WelcomeScreen({ navigation }) {
       <StatusBar barStyle="dark-content" />
 
       <View style={styles.topSection}>
-        <View style={styles.logoBadge}>
-          <Text style={styles.emoji}>✦</Text>
-        </View>
         <Text style={styles.appName}>ifoundit</Text>
-        <Text style={styles.tagline}>Snap. Analyze.{'\n'}Find your perfect skincare.</Text>
+        <Text style={styles.tagline}>Skincare,{'\n'}measured.</Text>
       </View>
 
       <View style={styles.stepsContainer}>
-        {STEPS.map((item) => (
-          <View key={item.text} style={styles.stepRow}>
-            <View style={styles.stepIconWrap}>
-              <Text
-                style={styles.stepIcon}
-                accessibilityElementsHidden
-                importantForAccessibility="no">
-                {item.icon}
-              </Text>
-            </View>
-            <Text style={styles.stepText}>{item.text}</Text>
+        {STEPS.map((text, index) => (
+          <View key={text} style={styles.stepRow}>
+            <Text style={styles.stepIndex}>{`0${index + 1}`}</Text>
+            <Text style={styles.stepText}>{text}</Text>
           </View>
         ))}
       </View>
@@ -52,7 +50,7 @@ export default function WelcomeScreen({ navigation }) {
           onPress={() => navigation.navigate('Capture')}>
           <Text style={styles.buttonText}>Get Started →</Text>
         </TouchableOpacity>
-        <Text style={styles.sub}>Free · Takes only 2 minutes</Text>
+        <Text style={styles.sub}>Free · Takes 2 minutes</Text>
         <Text style={styles.disclaimer}>
           Cosmetic guidance only — not medical advice or a diagnosis.
         </Text>
@@ -63,48 +61,19 @@ export default function WelcomeScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 30 },
-  topSection: { alignItems: 'center' },
-  logoBadge: {
-    width: 76,
-    height: 76,
-    borderRadius: 38,
-    backgroundColor: colors.accentSoft,
-    borderWidth: 1,
-    borderColor: colors.accentFaint,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
-  },
-  emoji: { fontSize: 34, color: colors.accent },
-  appName: { ...typography.display, color: colors.text },
-  tagline: {
-    fontSize: 17,
-    color: colors.textBody,
-    textAlign: 'center',
-    marginTop: 10,
-    lineHeight: 26,
-  },
-  stepsContainer: { ...centeredColumn, gap: 12 },
+  topSection: { ...centeredColumn, alignItems: 'flex-start' },
+  appName: { ...typography.label, color: colors.textMuted, marginBottom: 16 },
+  tagline: { ...typography.display, color: colors.text, lineHeight: 40 },
+  stepsContainer: { ...centeredColumn, borderTopWidth: 1, borderTopColor: colors.border },
   stepRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 14,
-    ...shadow,
+    gap: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    paddingVertical: 16,
   },
-  stepIconWrap: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: colors.surfaceStrong,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 14,
-  },
-  stepIcon: { fontSize: 20 },
+  stepIndex: { ...typography.label, color: colors.textMuted },
   stepText: { ...typography.body, color: colors.textStrong, flex: 1 },
   footer: { ...centeredColumn, alignItems: 'center', gap: 10 },
   button: {
@@ -115,7 +84,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     ...shadow,
   },
-  buttonText: { color: colors.onAccent, fontSize: 17, fontWeight: '700', letterSpacing: 0.2 },
+  buttonText: { color: colors.onAccent, fontSize: 17, fontFamily: fonts.medium },
   sub: { color: colors.textMuted, fontSize: 13 },
   disclaimer: { color: colors.textMuted, fontSize: 11, textAlign: 'center', lineHeight: 16 },
 });

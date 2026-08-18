@@ -4,7 +4,15 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CONCERNS, SAFETY_FLAGS } from '../src/domain/concerns';
-import { centeredColumn, colors, gradient, radius, shadow, typography } from '../src/theme';
+import {
+  centeredColumn,
+  colors,
+  fonts,
+  gradient,
+  radius,
+  shadow,
+  typography,
+} from '../src/theme';
 
 function toggle(list, id) {
   return list.includes(id) ? list.filter((item) => item !== id) : [...list, id];
@@ -21,6 +29,7 @@ export default function ConcernScreen({ route, navigation }) {
       <ScrollView
         contentContainerStyle={[styles.content, { paddingTop: insets.top + 30 }]}
         showsVerticalScrollIndicator={false}>
+        <Text style={styles.eyebrow}>Step 02</Text>
         <Text style={styles.title}>What would you{'\n'}like to work on?</Text>
         <Text style={styles.sub}>Pick everything that applies — you can change this later.</Text>
 
@@ -35,7 +44,6 @@ export default function ConcernScreen({ route, navigation }) {
                 accessibilityState={{ checked: isSelected }}
                 accessibilityLabel={concern.label}
                 onPress={() => setConcerns(toggle(concerns, concern.id))}>
-                <Text style={styles.emoji}>{concern.emoji}</Text>
                 <Text style={[styles.optionLabel, isSelected && styles.optionLabelSelected]}>
                   {concern.label}
                 </Text>
@@ -91,7 +99,8 @@ export default function ConcernScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { ...centeredColumn, paddingHorizontal: 24, paddingBottom: 40 },
-  title: { ...typography.title, color: colors.text, lineHeight: 36 },
+  eyebrow: { ...typography.label, color: colors.textMuted, marginBottom: 10 },
+  title: { ...typography.title, color: colors.text, lineHeight: 34 },
   sub: { ...typography.caption, color: colors.textMuted, marginTop: 8, marginBottom: 18 },
   sectionTitle: { ...typography.section, color: colors.text, marginTop: 32 },
   options: { gap: 10 },
@@ -101,25 +110,24 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.md,
     padding: 16,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.border,
     ...shadow,
   },
-  optionSelected: { borderColor: colors.accent, backgroundColor: colors.accentSoft },
-  emoji: { fontSize: 22, marginRight: 12 },
-  optionLabel: { flex: 1, fontSize: 16, fontWeight: '600', color: colors.textStrong },
+  optionSelected: { borderColor: colors.text },
+  optionLabel: { flex: 1, fontSize: 16, fontFamily: fonts.medium, color: colors.textStrong },
   optionLabelSelected: { color: colors.accentDeep },
   check: {
     width: 22,
     height: 22,
     borderRadius: 11,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: colors.borderStrong,
     justifyContent: 'center',
     alignItems: 'center',
   },
   checkSelected: { borderColor: colors.accent, backgroundColor: colors.accent },
-  checkMark: { color: colors.onAccent, fontSize: 12, fontWeight: '800' },
+  checkMark: { color: colors.onAccent, fontSize: 12, fontFamily: fonts.semibold },
   button: {
     marginTop: 32,
     backgroundColor: colors.accent,
@@ -129,6 +137,6 @@ const styles = StyleSheet.create({
     ...shadow,
   },
   buttonDisabled: { backgroundColor: colors.disabled, shadowOpacity: 0, elevation: 0 },
-  buttonText: { color: colors.onAccent, fontSize: 17, fontWeight: '700', letterSpacing: 0.2 },
+  buttonText: { color: colors.onAccent, fontSize: 17, fontFamily: fonts.semibold, letterSpacing: 0.2 },
   buttonTextDisabled: { color: colors.disabledText },
 });
