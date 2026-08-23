@@ -5,6 +5,11 @@
  *
  * targets: concern ids the product helps with.
  * ingredients: normalized ingredient ids used by the contraindication rules.
+ * retailers: which storefronts stock the brand, for the buy links (Olive Young
+ *   Global only lists K-beauty brands, so western brands are Amazon-only).
+ * openBeautyFactsCode: barcode used to pull the full INCI list from Open Beauty
+ *   Facts. Most K-beauty products are missing there, so it is optional and the
+ *   catalog stays the source of truth for matching.
  */
 export const ROUTINE_STEPS = [
   { id: 'cleanser', label: 'Cleanser', essential: true },
@@ -25,6 +30,8 @@ export const COSMETICS = [
     ingredients: ['bha'],
     emoji: '🧴',
     badge: 'K-Beauty',
+    retailers: ['amazon', 'oliveyoung'],
+    openBeautyFactsCode: '8809416470511',
   },
   {
     id: 'cerave-hydrating-cleanser',
@@ -36,6 +43,8 @@ export const COSMETICS = [
     ingredients: ['ceramide'],
     emoji: '🧼',
     badge: 'Best Value',
+    retailers: ['amazon'],
+    openBeautyFactsCode: '3606000537675',
   },
   {
     id: 'somebymi-miracle-toner',
@@ -47,6 +56,7 @@ export const COSMETICS = [
     ingredients: ['aha', 'bha'],
     emoji: '💧',
     badge: 'K-Beauty',
+    retailers: ['amazon', 'oliveyoung'],
   },
   {
     id: 'klairs-supple-toner',
@@ -58,6 +68,7 @@ export const COSMETICS = [
     ingredients: ['hyaluronic-acid'],
     emoji: '🫧',
     badge: 'Fragrance-free',
+    retailers: ['amazon', 'oliveyoung'],
   },
   {
     id: 'ordinary-niacinamide',
@@ -69,6 +80,7 @@ export const COSMETICS = [
     ingredients: ['niacinamide'],
     emoji: '🔬',
     badge: 'Best Value',
+    retailers: ['amazon'],
   },
   {
     id: 'ordinary-retinal',
@@ -80,6 +92,7 @@ export const COSMETICS = [
     ingredients: ['retinoid'],
     emoji: '🧪',
     badge: 'Anti-aging',
+    retailers: ['amazon'],
   },
   {
     id: 'purito-centella-serum',
@@ -91,6 +104,7 @@ export const COSMETICS = [
     ingredients: ['centella'],
     emoji: '🌱',
     badge: 'Soothing',
+    retailers: ['amazon', 'oliveyoung'],
   },
   {
     id: 'anua-heartleaf-cream',
@@ -102,6 +116,7 @@ export const COSMETICS = [
     ingredients: ['centella'],
     emoji: '🌿',
     badge: 'K-Beauty',
+    retailers: ['amazon', 'oliveyoung'],
   },
   {
     id: 'illiyoon-ceramide-cream',
@@ -113,6 +128,7 @@ export const COSMETICS = [
     ingredients: ['ceramide'],
     emoji: '🥛',
     badge: 'Best Value',
+    retailers: ['amazon', 'oliveyoung'],
   },
   {
     id: 'boj-relief-sun',
@@ -124,6 +140,7 @@ export const COSMETICS = [
     ingredients: ['chemical-uv-filter'],
     emoji: '☀️',
     badge: 'K-Beauty',
+    retailers: ['amazon', 'oliveyoung'],
   },
   {
     id: 'roundlab-birch-sun',
@@ -135,6 +152,7 @@ export const COSMETICS = [
     ingredients: ['chemical-uv-filter'],
     emoji: '🌤️',
     badge: 'Best Value',
+    retailers: ['amazon', 'oliveyoung'],
   },
 ];
 

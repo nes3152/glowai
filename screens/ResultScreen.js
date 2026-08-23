@@ -1,12 +1,14 @@
-import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import SkinRadarChart from '../src/components/SkinRadarChart';
 import { CONCERNS } from '../src/domain/concerns';
 import { formatPrice } from '../src/domain/money';
+import { buyLinks } from '../src/domain/retailers';
 import { BASELINE_SCORE } from '../src/domain/skinAnalysis';
+import { enrichProducts } from '../src/services/ingredientsService';
 import {
   centeredColumn,
   colors,
@@ -16,6 +18,8 @@ import {
   shadow,
   typography,
 } from '../src/theme';
+
+const NO_PRODUCTS = [];
 
 function toMetrics(scores) {
   return CONCERNS.filter((concern) => typeof scores[concern.id] === 'number').map((concern) => ({
@@ -28,6 +32,35 @@ function toMetrics(scores) {
 export default function ResultScreen({ route, navigation }) {
   const { analysis } = route.params ?? {};
   const insets = useSafeAreaInsets();
+  const products = analysis?.recommendations?.cosmetics ?? NO_PRODUCTS;
+  // Published INCI lists, keyed by product id. Open Beauty Facts is best-effort:
+  // whatever it returns is extra reading, never an input to the recommendation.
+  const [ingredientLists, setIngredientLists] = useState({});
+  const [openIngredients, setOpenIngredients] = useState(null);
+
+  useEffect(() => {
+    const known = products.filter((product) => product.openBeautyFactsCode);
+    if (known.length === 0) return undefined;
+
+    let cancelled = false;
+    enrichProducts(known).then((enriched) => {
+      if (cancelled) return;
+      setIngredientLists(
+        Object.fromEntries(
+          enriched
+            .filter((product) => product.ingredientsText)
+            .map((product) => [product.id, product.ingredientsText]),
+        ),
+      );
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [products]);
+
+  const openLink = useCallback((url) => {
+    Linking.openURL(url).catch(() => {});
+  }, []);
 
   if (!analysis) {
     return (
@@ -132,8 +165,39 @@ export default function ResultScreen({ route, navigation }) {
             <View style={styles.reasonBox}>
               <Text style={styles.reasonText}>{product.reason}</Text>
             </View>
+            {ingredientLists[product.id] && (
+              <TouchableOpacity
+                accessibilityRole="button"
+                onPress={() =>
+                  setOpenIngredients((current) => (current === product.id ? null : product.id))
+                }>
+                <Text style={styles.ingredientsLabel}>
+                  {openIngredients === product.id ? 'Hide ingredients' : 'Full ingredients'} · Open
+                  Beauty Facts
+                </Text>
+                {openIngredients === product.id && (
+                  <Text style={styles.ingredientsText}>{ingredientLists[product.id]}</Text>
+                )}
+              </TouchableOpacity>
+            )}
+            <View style={styles.buyRow}>
+              {buyLinks(product).map((link) => (
+                <TouchableOpacity
+                  key={link.id}
+                  style={styles.buyButton}
+                  accessibilityRole="link"
+                  onPress={() => openLink(link.url)}>
+                  <Text style={styles.buyText}>Find on {link.label} ↗</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
         ))}
+
+        <Text style={styles.note}>
+          Buy links open a search at the retailer — prices shown here are our catalog reference, not
+          a live retailer price.
+        </Text>
 
         {skippedSteps.length > 0 && (
           <Text style={styles.note}>
@@ -299,6 +363,17 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   reasonText: { fontSize: 12, color: colors.textBody, lineHeight: 18 },
+  ingredientsLabel: { ...typography.label, color: colors.textMuted, marginTop: 12 },
+  ingredientsText: { fontSize: 11, color: colors.textBody, lineHeight: 17, marginTop: 6 },
+  buyRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 },
+  buyButton: {
+    borderWidth: 1,
+    borderColor: colors.borderStrong,
+    borderRadius: radius.pill,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+  },
+  buyText: { fontSize: 12, color: colors.textStrong, fontFamily: fonts.medium },
   note: { fontSize: 12, color: colors.textMuted, paddingHorizontal: 24, marginBottom: 12 },
   cardNote: { fontSize: 11, color: colors.warning, marginTop: 6, lineHeight: 16 },
   disclaimer: {
