@@ -1,5 +1,6 @@
 import { budgetCap } from './budgets';
 import { COSMETICS, DEVICES, ROUTINE_STEPS, SUPPLEMENTS } from '../data/products';
+import { HEALTH_ADVICE } from './lifestyle';
 import { sumPrices } from './money';
 import { BASELINE_SCORE, topConcerns } from './skinAnalysis';
 
@@ -105,8 +106,17 @@ export function selectRoutine({ scores, budgetId, safetyFlags = [] }) {
   };
 }
 
-export function selectSupplements({ scores, lifestyle = [], limit = 2 }) {
-  return SUPPLEMENTS.map((supplement) => ({
+/** A single matching health answer removes the item, whatever it scored. */
+export function isSafeFor(item, healthFlags = []) {
+  return !item.avoidFlags?.some((flag) => healthFlags.includes(flag));
+}
+
+export function healthNotes(healthFlags = []) {
+  return healthFlags.map((flag) => HEALTH_ADVICE[flag]).filter(Boolean);
+}
+
+export function selectSupplements({ scores, lifestyle = [], healthFlags = [], limit = 2 }) {
+  return SUPPLEMENTS.filter((supplement) => isSafeFor(supplement, healthFlags)).map((supplement) => ({
     supplement,
     rank:
       scoreProduct(supplement, scores) +
@@ -117,9 +127,11 @@ export function selectSupplements({ scores, lifestyle = [], limit = 2 }) {
     .map((entry) => entry.supplement);
 }
 
-export function selectDevices({ scores, limit = 2 }) {
-  const relevant = DEVICES.filter((device) =>
-    device.targets.some((target) => (scores[target] ?? 0) > BASELINE_SCORE)
+export function selectDevices({ scores, healthFlags = [], limit = 2 }) {
+  const relevant = DEVICES.filter(
+    (device) =>
+      isSafeFor(device, healthFlags) &&
+      device.targets.some((target) => (scores[target] ?? 0) > BASELINE_SCORE)
   );
   return relevant
     .sort((a, b) => scoreProduct(b, scores) - scoreProduct(a, scores) || a.price.amount - b.price.amount)
@@ -135,15 +147,25 @@ export function explain(product, scores) {
   return `Picked for your ${matched.join(' and ').toLowerCase()} scores.`;
 }
 
-export function buildRecommendations({ report, budgetId, safetyFlags = [], lifestyle = [] }) {
+export function buildRecommendations({
+  report,
+  budgetId,
+  safetyFlags = [],
+  lifestyle = [],
+  healthFlags = [],
+}) {
   const routine = selectRoutine({ scores: report.scores, budgetId, safetyFlags });
+  // Pregnancy is asked once, on the concern screen, and rules out both
+  // ingredients and current-based devices.
+  const allFlags = [...new Set([...healthFlags, ...safetyFlags])];
   return {
     priorities: topConcerns(report.scores),
     cosmetics: routine.items.map((item) => ({ ...item, reason: explain(item, report.scores) })),
     cosmeticsTotal: routine.total,
     skippedSteps: routine.skippedSteps,
     warnings: routine.warnings,
-    supplements: selectSupplements({ scores: report.scores, lifestyle }),
-    devices: selectDevices({ scores: report.scores }),
+    supplements: selectSupplements({ scores: report.scores, lifestyle, healthFlags: allFlags }),
+    devices: selectDevices({ scores: report.scores, healthFlags: allFlags }),
+    healthNotes: healthNotes(allFlags),
   };
 }

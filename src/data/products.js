@@ -160,6 +160,9 @@ export const COSMETICS = [
  * Supplements are matched on lifestyle answers, never on a photo — the copy is
  * deliberately non-medical ("supports"), and everything here is a general
  * wellness claim. Anything stronger needs regulatory review.
+ *
+ * triggers: lifestyle answers that make the suggestion more relevant.
+ * avoidFlags: health answers that remove it entirely.
  */
 export const SUPPLEMENTS = [
   {
@@ -167,7 +170,8 @@ export const SUPPLEMENTS = [
     name: 'Omega-3 (EPA/DHA)',
     price: { amount: 18, currency: 'USD' },
     targets: ['redness', 'dryness'],
-    triggers: ['lowWater'],
+    triggers: ['lowWater', 'lowVeg'],
+    avoidFlags: ['bloodThinners', 'fishAllergy'],
     reason: 'Commonly used to support the skin barrier when the diet is low in oily fish.',
     emoji: '🐟',
   },
@@ -177,6 +181,7 @@ export const SUPPLEMENTS = [
     price: { amount: 9, currency: 'USD' },
     targets: ['acne', 'oiliness'],
     triggers: ['highStress'],
+    avoidFlags: [],
     reason: 'Often paired with acne-prone routines; keep to the label dose.',
     emoji: '⚪',
   },
@@ -185,7 +190,8 @@ export const SUPPLEMENTS = [
     name: 'Vitamin C 500mg',
     price: { amount: 11, currency: 'USD' },
     targets: ['pigmentation', 'wrinkles'],
-    triggers: [],
+    triggers: ['lowVeg', 'outdoors'],
+    avoidFlags: [],
     reason: 'General antioxidant support alongside daily SPF.',
     emoji: '🍊',
   },
@@ -195,17 +201,20 @@ export const SUPPLEMENTS = [
     price: { amount: 26, currency: 'USD' },
     targets: ['wrinkles', 'dryness'],
     triggers: ['poorSleep'],
+    avoidFlags: ['fishAllergy'],
     reason: 'Popular for elasticity support; evidence is mixed but tolerance is good.',
     emoji: '🥤',
   },
 ];
 
+/** avoidFlags work the same way as for supplements: a hard exclusion. */
 export const DEVICES = [
   {
     id: 'led-mask',
     name: 'LED Therapy Mask',
     price: { amount: 189, currency: 'USD' },
     targets: ['acne', 'wrinkles'],
+    avoidFlags: ['photosensitising', 'epilepsy'],
     reason: 'Red/blue LED sessions a few times a week; check local device certification.',
     requiresCertification: true,
     emoji: '💡',
@@ -215,6 +224,7 @@ export const DEVICES = [
     name: 'Silicone Cleansing Brush',
     price: { amount: 39, currency: 'USD' },
     targets: ['pores', 'oiliness'],
+    avoidFlags: [],
     reason: 'Gentle daily deep-cleanse without abrasive bristles.',
     requiresCertification: false,
     emoji: '🪥',
@@ -224,6 +234,7 @@ export const DEVICES = [
     name: 'Bedside Humidifier',
     price: { amount: 45, currency: 'USD' },
     targets: ['dryness'],
+    avoidFlags: [],
     reason: 'Raises overnight humidity, which helps dry and tight skin.',
     requiresCertification: false,
     emoji: '💨',
@@ -233,6 +244,7 @@ export const DEVICES = [
     name: 'Microcurrent Lifting Device',
     price: { amount: 219, currency: 'USD' },
     targets: ['wrinkles'],
+    avoidFlags: ['implantedDevice', 'pregnancy'],
     reason: 'Short daily sessions for contour; results are temporary.',
     requiresCertification: true,
     emoji: '⚡',

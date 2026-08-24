@@ -15,7 +15,13 @@ import {
 } from '../src/theme';
 
 export default function BudgetScreen({ route, navigation }) {
-  const { photos = [], concerns = [], safetyFlags = [] } = route.params ?? {};
+  const {
+    photos = [],
+    concerns = [],
+    safetyFlags = [],
+    lifestyle = [],
+    healthFlags = [],
+  } = route.params ?? {};
   const [selected, setSelected] = useState(null);
   const insets = useSafeAreaInsets();
 
@@ -24,7 +30,7 @@ export default function BudgetScreen({ route, navigation }) {
       colors={gradient}
       style={[styles.container, { paddingTop: insets.top + 30, paddingBottom: insets.bottom + 24 }]}>
       <View style={styles.header}>
-        <Text style={styles.eyebrow}>Step 03</Text>
+        <Text style={styles.eyebrow}>Step 04</Text>
         <Text style={styles.title}>What’s your monthly{'\n'}skincare budget?</Text>
         <Text style={styles.sub}>Your routine total will stay inside this range</Text>
       </View>
@@ -60,7 +66,14 @@ export default function BudgetScreen({ route, navigation }) {
         accessibilityState={{ disabled: !selected }}
         disabled={!selected}
         onPress={() =>
-          navigation.navigate('Analyzing', { photos, concerns, safetyFlags, budget: selected })
+          navigation.navigate('Analyzing', {
+            photos,
+            concerns,
+            safetyFlags,
+            lifestyle,
+            healthFlags,
+            budget: selected,
+          })
         }>
         <Text style={[styles.buttonText, !selected && styles.buttonTextDisabled]}>
           {selected ? 'Analyze My Skin →' : 'Select a budget'}

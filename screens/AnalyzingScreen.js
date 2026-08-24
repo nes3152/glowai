@@ -27,7 +27,14 @@ const stepNumber = (index) => String(index + 1).padStart(2, '0');
 export const MIN_DISPLAY_MS = 1800;
 
 export default function AnalyzingScreen({ route, navigation }) {
-  const { photos = [], concerns = [], safetyFlags = [], budget } = route.params ?? {};
+  const {
+    photos = [],
+    concerns = [],
+    safetyFlags = [],
+    lifestyle = [],
+    healthFlags = [],
+    budget,
+  } = route.params ?? {};
   const [currentStep, setCurrentStep] = useState(0);
   const [error, setError] = useState(null);
   const [attempt, setAttempt] = useState(0);
@@ -65,7 +72,7 @@ export default function AnalyzingScreen({ route, navigation }) {
     }, 900);
 
     const startedAt = Date.now();
-    analyzeSkin({ photos, concerns, budget, safetyFlags })
+    analyzeSkin({ photos, concerns, budget, safetyFlags, lifestyle, healthFlags })
       .then((analysis) => {
         const remaining = MIN_DISPLAY_MS - (Date.now() - startedAt);
         const navigate = () => {
