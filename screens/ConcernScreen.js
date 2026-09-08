@@ -86,7 +86,7 @@ export default function ConcernScreen({ route, navigation }) {
           accessibilityRole="button"
           accessibilityState={{ disabled: concerns.length === 0 }}
           disabled={concerns.length === 0}
-          onPress={() => navigation.navigate('Budget', { photos, concerns, safetyFlags })}>
+          onPress={() => navigation.navigate('Lifestyle', { photos, concerns, safetyFlags })}>
           <Text style={[styles.buttonText, concerns.length === 0 && styles.buttonTextDisabled]}>
             {concerns.length === 0 ? 'Select at least one' : 'Continue →'}
           </Text>

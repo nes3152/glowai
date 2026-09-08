@@ -10,6 +10,7 @@ import { colors } from './src/theme';
 import WelcomeScreen from './screens/WelcomeScreen';
 import CaptureScreen from './screens/CaptureScreen';
 import ConcernScreen from './screens/ConcernScreen';
+import LifestyleScreen from './screens/LifestyleScreen';
 import BudgetScreen from './screens/BudgetScreen';
 import AnalyzingScreen from './screens/AnalyzingScreen';
 import ResultScreen from './screens/ResultScreen';
@@ -46,6 +47,7 @@ export default function App() {
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="Capture" component={CaptureScreen} />
           <Stack.Screen name="Concern" component={ConcernScreen} />
+          <Stack.Screen name="Lifestyle" component={LifestyleScreen} />
           <Stack.Screen name="Budget" component={BudgetScreen} />
           <Stack.Screen name="Analyzing" component={AnalyzingScreen} />
           <Stack.Screen name="Result" component={ResultScreen} />

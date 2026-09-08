@@ -77,8 +77,15 @@ export default function ResultScreen({ route, navigation }) {
   }
 
   const { scores, score, skinType, confidence, recommendations } = analysis;
-  const { cosmetics, cosmeticsTotal, skippedSteps, warnings, supplements, devices } =
-    recommendations;
+  const {
+    cosmetics,
+    cosmeticsTotal,
+    skippedSteps,
+    warnings,
+    supplements,
+    devices,
+    healthNotes = [],
+  } = recommendations;
   const metrics = toMetrics(scores);
   const focus = [...metrics].sort((a, b) => b.value - a.value).slice(0, 3);
 
@@ -203,6 +210,16 @@ export default function ResultScreen({ route, navigation }) {
           <Text style={styles.note}>
             Skipped to stay in budget: {skippedSteps.join(', ')}. Raise your budget to add them.
           </Text>
+        )}
+
+        {healthNotes.length > 0 && (
+          <View style={styles.warningBox}>
+            {healthNotes.map((note) => (
+              <Text key={note} style={styles.warningText}>
+                {note}
+              </Text>
+            ))}
+          </View>
         )}
 
         {supplements.length > 0 && (

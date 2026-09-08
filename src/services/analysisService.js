@@ -23,7 +23,14 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
  *   recommendations: Object, disclaimers: string[]}>}
  */
 export async function analyzeSkin(input, { delayMs = 2400 } = {}) {
-  const { photos = [], concerns = [], budget, safetyFlags = [], lifestyle = [] } = input ?? {};
+  const {
+    photos = [],
+    concerns = [],
+    budget,
+    safetyFlags = [],
+    lifestyle = [],
+    healthFlags = [],
+  } = input ?? {};
 
   if (photos.length < REQUIRED_PHOTOS) {
     throw new AnalysisError(
@@ -43,7 +50,13 @@ export async function analyzeSkin(input, { delayMs = 2400 } = {}) {
   return {
     analysisId: `local-${Date.now()}`,
     ...report,
-    recommendations: buildRecommendations({ report, budgetId: budget, safetyFlags, lifestyle }),
+    recommendations: buildRecommendations({
+      report,
+      budgetId: budget,
+      safetyFlags,
+      lifestyle,
+      healthFlags,
+    }),
     disclaimers: ['not_medical_advice'],
   };
 }
