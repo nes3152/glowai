@@ -6,8 +6,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SkinRadarChart from '../src/components/SkinRadarChart';
 import { CONCERNS } from '../src/domain/concerns';
 import { formatPrice } from '../src/domain/money';
+import { compareLatest } from '../src/domain/history';
 import { buyLinks } from '../src/domain/retailers';
 import { BASELINE_SCORE } from '../src/domain/skinAnalysis';
+import { saveAnalysis } from '../src/services/historyService';
 import { enrichProducts } from '../src/services/ingredientsService';
 import {
   centeredColumn,
@@ -21,6 +23,9 @@ import {
 
 const NO_PRODUCTS = [];
 
+const concernLabel = (id) => CONCERNS.find((c) => c.id === id)?.short ?? id;
+const signed = (n) => (n > 0 ? `+${n}` : `${n}`);
+
 function toMetrics(scores) {
   return CONCERNS.filter((concern) => typeof scores[concern.id] === 'number').map((concern) => ({
     id: concern.id,
@@ -30,9 +35,22 @@ function toMetrics(scores) {
 }
 
 export default function ResultScreen({ route, navigation }) {
-  const { analysis } = route.params ?? {};
+  const { analysis, fromHistory = false } = route.params ?? {};
   const insets = useSafeAreaInsets();
   const products = analysis?.recommendations?.cosmetics ?? NO_PRODUCTS;
+  // Change since the previous saved report; null until saved or when this is the first.
+  const [comparison, setComparison] = useState(null);
+
+  useEffect(() => {
+    if (!analysis || fromHistory) return undefined;
+    let cancelled = false;
+    saveAnalysis(analysis).then((history) => {
+      if (!cancelled) setComparison(compareLatest(history));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [analysis, fromHistory]);
   // Published INCI lists, keyed by product id. Open Beauty Facts is best-effort:
   // whatever it returns is extra reading, never an input to the recommendation.
   const [ingredientLists, setIngredientLists] = useState({});
@@ -135,6 +153,30 @@ export default function ResultScreen({ route, navigation }) {
             </>
           )}
         </View>
+
+        {comparison && (
+          <TouchableOpacity
+            style={styles.trendCard}
+            accessibilityRole="button"
+            onPress={() => navigation.navigate('Progress')}>
+            <View style={styles.trendTop}>
+              <Text style={styles.trendLabel}>Since last report</Text>
+              <Text style={styles.trendDelta}>{signed(comparison.scoreDelta)}</Text>
+            </View>
+            <Text style={styles.trendText}>
+              {comparison.improved.length > 0
+                ? `Improved: ${comparison.improved.map((c) => concernLabel(c.id)).join(', ')}. `
+                : ''}
+              {comparison.worsened.length > 0
+                ? `Needs attention: ${comparison.worsened.map((c) => concernLabel(c.id)).join(', ')}. `
+                : ''}
+              {comparison.improved.length === 0 && comparison.worsened.length === 0
+                ? 'No change in any individual concern. '
+                : ''}
+              View progress →
+            </Text>
+          </TouchableOpacity>
+        )}
 
         {warnings.length > 0 && (
           <View style={styles.warningBox}>
@@ -274,7 +316,13 @@ export default function ResultScreen({ route, navigation }) {
           style={styles.retakeButton}
           accessibilityRole="button"
           onPress={() => navigation.navigate('Capture')}>
-          <Text style={styles.retakeText}>Retake photos</Text>
+          <Text style={styles.retakeText}>{fromHistory ? 'New analysis' : 'Retake photos'}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.linkButton}
+          accessibilityRole="button"
+          onPress={() => navigation.navigate('Progress')}>
+          <Text style={styles.linkText}>View progress</Text>
         </TouchableOpacity>
       </ScrollView>
     </LinearGradient>
@@ -329,6 +377,20 @@ const styles = StyleSheet.create({
   },
   chipLabel: { fontSize: 12, color: colors.accentDeep, fontFamily: fonts.semibold },
   chipValue: { fontSize: 12, color: colors.textBody, fontFamily: fonts.medium },
+  trendCard: {
+    marginHorizontal: 24,
+    marginBottom: 24,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    padding: 14,
+    gap: 6,
+  },
+  trendTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  trendLabel: { ...typography.label, color: colors.textMuted },
+  trendDelta: { fontSize: 18, fontFamily: fonts.semibold, color: colors.text },
+  trendText: { fontSize: 12, color: colors.textBody, lineHeight: 18 },
   warningBox: {
     marginHorizontal: 24,
     marginBottom: 24,
@@ -411,4 +473,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   retakeText: { color: colors.textStrong, fontSize: 16, fontFamily: fonts.semibold },
+  linkButton: { alignSelf: 'center', marginTop: 16, paddingVertical: 8, paddingHorizontal: 16 },
+  linkText: { fontSize: 14, color: colors.textBody, textDecorationLine: 'underline' },
 });
