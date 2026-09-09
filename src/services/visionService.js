@@ -9,8 +9,17 @@ export const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
  *    This is the only safe option for a published web build.
  *  - `EXPO_PUBLIC_OPENAI_API_KEY`: direct call, for local development only. Anything in an
  *    EXPO_PUBLIC_ variable ships inside the bundle.
+ *
+ * Expo inlines only literal `process.env.EXPO_PUBLIC_*` accesses, so the values are read
+ * here rather than through the `env` object.
  */
-export function getVisionConfig(env = process.env) {
+const PUBLIC_ENV = {
+  EXPO_PUBLIC_ANALYSIS_URL: process.env.EXPO_PUBLIC_ANALYSIS_URL,
+  EXPO_PUBLIC_OPENAI_API_KEY: process.env.EXPO_PUBLIC_OPENAI_API_KEY,
+  EXPO_PUBLIC_OPENAI_MODEL: process.env.EXPO_PUBLIC_OPENAI_MODEL,
+};
+
+export function getVisionConfig(env = PUBLIC_ENV) {
   const proxyUrl = env.EXPO_PUBLIC_ANALYSIS_URL?.trim();
   const apiKey = env.EXPO_PUBLIC_OPENAI_API_KEY?.trim();
   const model = env.EXPO_PUBLIC_OPENAI_MODEL?.trim() || DEFAULT_MODEL;
