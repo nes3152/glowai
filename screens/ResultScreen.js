@@ -94,7 +94,8 @@ export default function ResultScreen({ route, navigation }) {
     );
   }
 
-  const { scores, score, skinType, confidence, recommendations } = analysis;
+  const { analysisId = '', scores, score, skinType, confidence, recommendations } = analysis;
+  const fromVision = analysisId.startsWith('vision-');
   const {
     cosmetics,
     cosmeticsTotal,
@@ -119,7 +120,9 @@ export default function ResultScreen({ route, navigation }) {
           <Text style={styles.eyebrow}>Report</Text>
           <Text style={styles.title}>Your skin, measured.</Text>
           <Text style={styles.sub}>
-            Based on your 3-angle analysis · confidence {Math.round(confidence * 100)}%
+            {fromVision ? 'Based on your 3-angle photo analysis' : 'Estimated from your answers'}
+            {' · confidence '}
+            {Math.round(confidence * 100)}%
           </Text>
         </View>
 

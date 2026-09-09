@@ -25,6 +25,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx expo export -p web
+        env:
+          EXPO_PUBLIC_ANALYSIS_URL: ${{ vars.EXPO_PUBLIC_ANALYSIS_URL }}
       - run: touch dist/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
