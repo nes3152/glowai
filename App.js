@@ -14,6 +14,7 @@ import LifestyleScreen from './screens/LifestyleScreen';
 import BudgetScreen from './screens/BudgetScreen';
 import AnalyzingScreen from './screens/AnalyzingScreen';
 import ResultScreen from './screens/ResultScreen';
+import ProgressScreen from './screens/ProgressScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -51,6 +52,7 @@ export default function App() {
           <Stack.Screen name="Budget" component={BudgetScreen} />
           <Stack.Screen name="Analyzing" component={AnalyzingScreen} />
           <Stack.Screen name="Result" component={ResultScreen} />
+          <Stack.Screen name="Progress" component={ProgressScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

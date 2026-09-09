@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { loadHistory } from '../src/services/historyService';
 import {
   centeredColumn,
   colors,
@@ -21,6 +23,19 @@ const STEPS = [
 
 export default function WelcomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
+  const [reportCount, setReportCount] = useState(0);
+
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+      loadHistory().then((history) => {
+        if (!cancelled) setReportCount(history.length);
+      });
+      return () => {
+        cancelled = true;
+      };
+    }, []),
+  );
 
   return (
     <LinearGradient
@@ -51,6 +66,16 @@ export default function WelcomeScreen({ navigation }) {
           <Text style={styles.buttonText}>Get Started →</Text>
         </TouchableOpacity>
         <Text style={styles.sub}>Free · Takes 2 minutes</Text>
+        {reportCount > 0 && (
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            accessibilityRole="button"
+            onPress={() => navigation.navigate('Progress')}>
+            <Text style={styles.secondaryText}>
+              View progress · {reportCount} {reportCount === 1 ? 'report' : 'reports'}
+            </Text>
+          </TouchableOpacity>
+        )}
         <Text style={styles.disclaimer}>
           Cosmetic guidance only — not medical advice or a diagnosis.
         </Text>
@@ -86,5 +111,14 @@ const styles = StyleSheet.create({
   },
   buttonText: { color: colors.onAccent, fontSize: 17, fontFamily: fonts.medium },
   sub: { color: colors.textMuted, fontSize: 13 },
+  secondaryButton: {
+    borderWidth: 1,
+    borderColor: colors.borderStrong,
+    borderRadius: radius.pill,
+    paddingVertical: 14,
+    width: '100%',
+    alignItems: 'center',
+  },
+  secondaryText: { color: colors.textStrong, fontSize: 15, fontFamily: fonts.medium },
   disclaimer: { color: colors.textMuted, fontSize: 11, textAlign: 'center', lineHeight: 16 },
 });
