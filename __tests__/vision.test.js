@@ -169,6 +169,13 @@ describe('analyzeSkin with vision', () => {
     await expect(run({ config: {}, request })).rejects.toMatchObject({ code: 'LOW_CONFIDENCE' });
   });
 
+  it('rejects NO_FACE when the model flags a missing face even at passable confidence', async () => {
+    const request = jest.fn().mockResolvedValue(
+      parseVisionReport({ ...validReply, confidence: 0.5, flags: ['face_not_visible'] }),
+    );
+    await expect(run({ config: {}, request })).rejects.toMatchObject({ code: 'NO_FACE' });
+  });
+
   it('skips vision entirely when not configured', async () => {
     const request = jest.fn();
     const analysis = await run({ config: null, request });

@@ -69,6 +69,12 @@ export async function analyzeSkin(
   if (report.confidence < MIN_CONFIDENCE) {
     throw new AnalysisError('LOW_CONFIDENCE', 'The photos were too unclear to analyze.');
   }
+  if (report.flags.includes('face_not_visible')) {
+    throw new AnalysisError(
+      'NO_FACE',
+      'We couldn’t find a face in the photos. Please retake them in good light.'
+    );
+  }
 
   return {
     analysisId: `${source}-${Date.now()}`,

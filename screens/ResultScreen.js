@@ -94,8 +94,8 @@ export default function ResultScreen({ route, navigation }) {
     );
   }
 
-  const { analysisId = '', scores, score, skinType, confidence, recommendations } = analysis;
-  const fromVision = analysisId.startsWith('vision-');
+  const { scores, score, skinType, confidence, recommendations } = analysis;
+  const fromVision = String(analysis.analysisId ?? analysis.id ?? '').startsWith('vision-');
   const {
     cosmetics,
     cosmeticsTotal,
