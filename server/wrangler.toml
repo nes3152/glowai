@@ -1,0 +1,15 @@
+name = "glowai-analysis"
+main = "openai-proxy.js"
+compatibility_date = "2025-09-01"
+
+[observability]
+enabled = true
+
+[vars]
+DAILY_LIMIT = "200"
+IP_DAILY_LIMIT = "10"
+
+# Created with: npx wrangler kv namespace create USAGE -c server/wrangler.toml
+[[kv_namespaces]]
+binding = "USAGE"
+id = "bc8ed1d38c1a45e289d7c6fcdef721bd"
