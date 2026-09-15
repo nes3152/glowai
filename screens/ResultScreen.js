@@ -113,6 +113,7 @@ export default function ResultScreen({ route, navigation }) {
   } = recommendations;
   const metrics = toMetrics(scores);
   const focus = [...metrics].sort((a, b) => b.value - a.value).slice(0, 3);
+  const observations = fromVision ? (analysis.observations ?? []) : [];
 
   return (
     <LinearGradient colors={gradient} style={styles.container}>
@@ -163,6 +164,21 @@ export default function ResultScreen({ route, navigation }) {
             </>
           )}
         </View>
+
+        {observations.length > 0 && (
+          <View style={styles.observationsCard}>
+            <Text style={styles.trendLabel}>What the analysis noticed</Text>
+            {observations.map(({ concern, note }) => (
+              <View key={concern} style={styles.observationRow}>
+                <Text style={styles.observationConcern}>{concernLabel(concern)}</Text>
+                <Text style={styles.observationNote}>{note}</Text>
+              </View>
+            ))}
+            <Text style={styles.observationHint}>
+              Based on what was visible in your photos. Cosmetic guidance, not a diagnosis.
+            </Text>
+          </View>
+        )}
 
         {comparison && (
           <TouchableOpacity
@@ -398,6 +414,20 @@ const styles = StyleSheet.create({
     padding: 14,
     gap: 6,
   },
+  observationsCard: {
+    marginHorizontal: 24,
+    marginBottom: 24,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    padding: 14,
+    gap: 10,
+  },
+  observationRow: { gap: 2 },
+  observationConcern: { fontSize: 12, fontFamily: fonts.semibold, color: colors.accentDeep },
+  observationNote: { fontSize: 13, color: colors.textBody, lineHeight: 19 },
+  observationHint: { fontSize: 11, color: colors.textMuted, lineHeight: 16 },
   trendTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   trendLabel: { ...typography.label, color: colors.textMuted },
   trendDelta: { fontSize: 18, fontFamily: fonts.semibold, color: colors.text },

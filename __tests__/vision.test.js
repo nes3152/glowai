@@ -1,5 +1,6 @@
 import { CONCERN_IDS } from '../src/domain/concerns';
 import {
+  MAX_OBSERVATION_CHARS,
   VISION_SCHEMA,
   VisionParseError,
   buildVisionPrompt,
@@ -56,6 +57,40 @@ describe('parseVisionReport', () => {
   it('drops flags it does not know about', () => {
     const report = parseVisionReport({ ...validReply, flags: ['blurry', 'alien'] });
     expect(report.flags).toEqual(['blurry']);
+  });
+
+  it('returns no observations when the reply omits them', () => {
+    expect(parseVisionReport(validReply).observations).toEqual([]);
+  });
+
+  it('keeps well-formed observations and drops junk, duplicates and overflow', () => {
+    const report = parseVisionReport({
+      ...validReply,
+      observations: [
+        { concern: 'acne', note: '  A few active spots along the jawline.  ' },
+        { concern: 'acne', note: 'duplicate concern' },
+        { concern: 'glow', note: 'unknown concern' },
+        { concern: 'pores', note: '' },
+        { concern: 'pores', note: 'x'.repeat(500) },
+        { concern: 'wrinkles', note: 'Faint lines at the outer eyes.' },
+        { concern: 'dryness', note: 'Flaky patches near the nose.' },
+        { concern: 'redness', note: 'Too many already.' },
+      ],
+    });
+    expect(report.observations.map((o) => o.concern)).toEqual([
+      'acne',
+      'pores',
+      'wrinkles',
+      'dryness',
+    ]);
+    expect(report.observations[0].note).toBe('A few active spots along the jawline.');
+    expect(report.observations[1].note).toHaveLength(MAX_OBSERVATION_CHARS);
+  });
+
+  it('asks the model for observations in the schema', () => {
+    const { observations } = VISION_SCHEMA.schema.properties;
+    expect(VISION_SCHEMA.schema.required).toContain('observations');
+    expect(observations.items.properties.concern.enum).toEqual(CONCERN_IDS);
   });
 
   it.each([
@@ -147,9 +182,15 @@ describe('analyzeSkin with vision', () => {
   const run = (vision) => analyzeSkin({ photos, concerns: ['acne'], budget: 'budget3' }, { delayMs: 0, vision });
 
   it('uses the vision report and tags the id', async () => {
-    const request = jest.fn().mockResolvedValue(parseVisionReport(validReply));
+    const request = jest.fn().mockResolvedValue(
+      parseVisionReport({
+        ...validReply,
+        observations: [{ concern: 'acne', note: 'Spots along the jawline.' }],
+      }),
+    );
     const analysis = await run({ config: {}, request });
     expect(analysis.analysisId).toMatch(/^vision-/);
+    expect(analysis.observations).toEqual([{ concern: 'acne', note: 'Spots along the jawline.' }]);
     expect(analysis.scores.acne).toBe(65);
     expect(analysis.recommendations.cosmetics.length).toBeGreaterThan(0);
   });

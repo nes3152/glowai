@@ -51,7 +51,7 @@ export async function toDataUrl(uri, fetchFn = fetch) {
 export function buildVisionRequest({ images, concerns, model }) {
   return {
     model,
-    max_tokens: 300,
+    max_tokens: 600,
     response_format: { type: 'json_schema', json_schema: VISION_SCHEMA },
     messages: [
       { role: 'system', content: buildVisionPrompt(concerns) },
