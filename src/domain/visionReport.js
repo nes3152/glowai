@@ -3,6 +3,8 @@ import { deriveSkinType } from './skinAnalysis';
 
 export const SKIN_TYPES = ['Normal', 'Dry', 'Oily', 'Combination', 'Sensitive'];
 export const VISION_FLAGS = ['blurry', 'poor_lighting', 'face_not_visible', 'makeup_detected'];
+export const MAX_OBSERVATIONS = 4;
+export const MAX_OBSERVATION_CHARS = 160;
 
 /** Structured-output schema sent to the model; `parseVisionReport` re-validates the reply. */
 export const VISION_SCHEMA = {
@@ -11,7 +13,7 @@ export const VISION_SCHEMA = {
   schema: {
     type: 'object',
     additionalProperties: false,
-    required: ['scores', 'skinType', 'confidence', 'flags'],
+    required: ['scores', 'skinType', 'confidence', 'flags', 'observations'],
     properties: {
       scores: {
         type: 'object',
@@ -24,6 +26,18 @@ export const VISION_SCHEMA = {
       skinType: { type: 'string', enum: SKIN_TYPES },
       confidence: { type: 'number', minimum: 0, maximum: 1 },
       flags: { type: 'array', items: { type: 'string', enum: VISION_FLAGS } },
+      observations: {
+        type: 'array',
+        items: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['concern', 'note'],
+          properties: {
+            concern: { type: 'string', enum: CONCERN_IDS },
+            note: { type: 'string' },
+          },
+        },
+      },
     },
   },
 };
@@ -42,6 +56,11 @@ export function buildVisionPrompt(concerns = []) {
     `The user self-reported these concerns: ${selfReported}. Use them as a hint, but score`,
     'what you actually see. Set confidence below 0.5 if a face is not clearly visible in all',
     'three photos, and add the matching flags for blur, poor lighting, missing face or makeup.',
+    '',
+    `Also return up to ${MAX_OBSERVATIONS} observations: for the most noticeable concerns, one`,
+    'plain-language sentence each describing what you see and where on the face (for example',
+    '"Small clogged pores across the nose and inner cheeks"). Second person, no diagnoses,',
+    'no product names. Return an empty array if nothing stands out.',
   ].join('\n');
 }
 
@@ -79,12 +98,28 @@ export function parseVisionReport(raw) {
   const severity = CONCERN_IDS.reduce((sum, id) => sum + scores[id], 0) / CONCERN_IDS.length;
 
   return {
+    observations: parseObservations(data.observations),
     skinType: SKIN_TYPES.includes(data.skinType) ? data.skinType : deriveSkinType(scores),
     score: Math.round(100 - severity * 0.6),
     scores,
     confidence: Number(clamp(confidence, 0, 1).toFixed(2)),
     flags,
   };
+}
+
+function parseObservations(raw) {
+  if (!Array.isArray(raw)) return [];
+  const seen = new Set();
+  const out = [];
+  for (const item of raw) {
+    const concern = item?.concern;
+    const note = typeof item?.note === 'string' ? item.note.trim() : '';
+    if (!CONCERN_IDS.includes(concern) || !note || seen.has(concern)) continue;
+    seen.add(concern);
+    out.push({ concern, note: note.slice(0, MAX_OBSERVATION_CHARS) });
+    if (out.length === MAX_OBSERVATIONS) break;
+  }
+  return out;
 }
 
 function safeJson(text) {

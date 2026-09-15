@@ -5,8 +5,16 @@ export const MAX_ENTRIES = 30;
 
 /** Stored snapshot of one analysis: enough to reopen the report and draw a trend. */
 export function toHistoryEntry(analysis, createdAt = Date.now()) {
-  const { analysisId, score, scores, skinType, confidence, recommendations, flags = [] } =
-    analysis;
+  const {
+    analysisId,
+    score,
+    scores,
+    skinType,
+    confidence,
+    recommendations,
+    flags = [],
+    observations = [],
+  } = analysis;
   return {
     id: analysisId,
     createdAt,
@@ -15,6 +23,7 @@ export function toHistoryEntry(analysis, createdAt = Date.now()) {
     skinType,
     confidence,
     flags,
+    observations,
     recommendations,
   };
 }

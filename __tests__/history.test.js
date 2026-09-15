@@ -50,6 +50,13 @@ describe('toHistoryEntry', () => {
     expect(saved).toMatchObject({ id: 'a1', createdAt: 1000, score: 70, scores: { acne: 72 } });
     expect(saved.recommendations).toEqual({ cosmetics: [] });
     expect(saved).not.toHaveProperty('disclaimers');
+    expect(saved.observations).toEqual([]);
+  });
+
+  it('keeps the vision observations so a reopened report can show them', () => {
+    const observations = [{ concern: 'acne', note: 'Spots along the jawline.' }];
+    const saved = toHistoryEntry(analysis('vision-1', 70, { acne: 72 }, { observations }), 1000);
+    expect(saved.observations).toEqual(observations);
   });
 });
 
