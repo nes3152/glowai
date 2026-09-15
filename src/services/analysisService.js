@@ -25,9 +25,10 @@ async function resolveReport({ photos, concerns }, vision) {
   try {
     const report = await vision.request({ photos, concerns }, { config: vision.config });
     return { report, source: 'vision' };
-  } catch {
+  } catch (e) {
+    const flag = e?.status === 429 ? 'vision_rate_limited' : 'vision_unavailable';
     return {
-      report: { ...estimate, flags: [...estimate.flags, 'vision_unavailable'] },
+      report: { ...estimate, flags: [...estimate.flags, flag] },
       source: 'local',
     };
   }

@@ -162,6 +162,14 @@ describe('analyzeSkin with vision', () => {
     expect(analysis.scores.acne).toBe(72);
   });
 
+  it('marks the estimate as rate-limited when the proxy answers 429', async () => {
+    const request = jest.fn().mockRejectedValue(new VisionRequestError('limit', 429));
+    const analysis = await run({ config: {}, request });
+    expect(analysis.analysisId).toMatch(/^local-/);
+    expect(analysis.flags).toContain('vision_rate_limited');
+    expect(analysis.flags).not.toContain('vision_unavailable');
+  });
+
   it('rejects LOW_CONFIDENCE when the model cannot see a face', async () => {
     const request = jest.fn().mockResolvedValue(
       parseVisionReport({ ...validReply, confidence: 0.2, flags: ['face_not_visible'] }),

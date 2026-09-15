@@ -96,6 +96,12 @@ export default function ResultScreen({ route, navigation }) {
 
   const { scores, score, skinType, confidence, recommendations } = analysis;
   const fromVision = String(analysis.analysisId ?? analysis.id ?? '').startsWith('vision-');
+  const flags = analysis.flags ?? [];
+  const fallbackNote = flags.includes('vision_rate_limited')
+    ? 'Today’s photo-analysis limit was reached, so this report uses your answers. Photo analysis resets tomorrow.'
+    : flags.includes('vision_unavailable')
+      ? 'Photo analysis was unavailable, so this report uses your answers.'
+      : null;
   const {
     cosmetics,
     cosmeticsTotal,
@@ -124,6 +130,7 @@ export default function ResultScreen({ route, navigation }) {
             {' · confidence '}
             {Math.round(confidence * 100)}%
           </Text>
+          {fallbackNote ? <Text style={styles.fallbackNote}>{fallbackNote}</Text> : null}
         </View>
 
         <View style={styles.scoreCard}>
@@ -340,6 +347,7 @@ const styles = StyleSheet.create({
   eyebrow: { ...typography.label, color: colors.textMuted, marginBottom: 8 },
   title: { ...typography.title, color: colors.text },
   sub: { ...typography.caption, color: colors.textMuted, marginTop: 4 },
+  fallbackNote: { ...typography.caption, color: colors.accent, marginTop: 8 },
   scoreCard: {
     marginHorizontal: 24,
     backgroundColor: colors.surface,
