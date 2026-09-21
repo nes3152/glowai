@@ -10,7 +10,6 @@
     "backgroundColor": "#FFFFFF",
     "ios": {
       "bundleIdentifier": "com.nes3152.glowai",
-      "buildNumber": "1",
       "supportsTablet": true,
       "config": {
         "usesNonExemptEncryption": false
@@ -18,14 +17,18 @@
     },
     "android": {
       "package": "com.nes3152.glowai",
-      "versionCode": 1,
-      "blockedPermissions": ["android.permission.RECORD_AUDIO"],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -44,6 +47,12 @@
         }
       ],
       "expo-splash-screen"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "8e229e41-5366-47a3-bc8e-a9a98180f800"
+      }
+    },
+    "owner": "jakcey"
   }
 }
