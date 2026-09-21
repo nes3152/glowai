@@ -9,11 +9,6 @@
         "EXPO_PUBLIC_ANALYSIS_URL": "https://glowai-analysis.glowai-nes3152.workers.dev"
       }
     },
-    "development": {
-      "extends": "base",
-      "developmentClient": true,
-      "distribution": "internal"
-    },
     "preview": {
       "extends": "base",
       "distribution": "internal",
