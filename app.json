@@ -1,15 +1,25 @@
 {
   "expo": {
-    "name": "GlowAI",
+    "name": "ifoundit",
     "slug": "GlowAI",
+    "description": "Take 3 selfies, get a cosmetic skin report and a routine that fits your budget.",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "backgroundColor": "#FFFFFF",
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.nes3152.glowai",
+      "buildNumber": "1",
+      "supportsTablet": true,
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
+      "package": "com.nes3152.glowai",
+      "versionCode": 1,
+      "blockedPermissions": ["android.permission.RECORD_AUDIO"],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
