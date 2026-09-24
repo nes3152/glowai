@@ -1,10 +1,11 @@
 import { BUDGETS, budgetCap, budgetLabel } from '../src/domain/budgets';
-import { COSMETICS, ROUTINE_STEPS } from '../src/data/products';
+import { COSMETICS, ROUTINE_STEPS, SUPPLEMENTS } from '../src/data/products';
 import {
   buildRecommendations,
   explain,
   findConflicts,
   isAllowed,
+  pickSupplementProduct,
   scoreProduct,
   selectDevices,
   selectRoutine,
@@ -165,6 +166,58 @@ describe('selectSupplements', () => {
 
   it('respects the limit', () => {
     expect(selectSupplements({ scores: reportFor(['acne']).scores, limit: 1 })).toHaveLength(1);
+  });
+
+  it('attaches a real product pick priced for the budget', () => {
+    const scores = reportFor(['acne']).scores;
+    const cheap = selectSupplements({ scores, budgetId: 'budget1', limit: 1 })[0];
+    const premium = selectSupplements({ scores, budgetId: 'budget4', limit: 1 })[0];
+    expect(cheap.id).toBe(premium.id);
+    expect(cheap.pick.brand).toBeTruthy();
+    expect(cheap.price).toEqual(cheap.pick.price);
+    expect(premium.pick.price.amount).toBeGreaterThan(cheap.pick.price.amount);
+  });
+
+  it('breaks relevance ties on the price of the pick actually shown', () => {
+    // zinc and vitamin C tie at zero relevance: generic $9 vs $11, value picks $8 vs $7.
+    const scores = Object.fromEntries(
+      Object.keys(reportFor(['acne']).scores).map((key) => [key, 0])
+    );
+    const cheap = selectSupplements({ scores, budgetId: 'budget1', limit: 4 });
+    const prices = cheap.map((s) => s.price.amount);
+    expect(prices).toEqual([...prices].sort((a, b) => a - b));
+    expect(cheap[0].id).toBe('vitamin-c');
+  });
+
+  it('treats a missing budget as unlimited, like the routine does', () => {
+    const [picked] = selectSupplements({ scores: reportFor(['acne']).scores, limit: 1 });
+    const priciest = Math.max(
+      ...SUPPLEMENTS.find((s) => s.id === picked.id).picks.map((p) => p.price.amount)
+    );
+    expect(picked.pick.price.amount).toBe(priciest);
+  });
+});
+
+describe('pickSupplementProduct', () => {
+  it('returns null for a supplement without picks', () => {
+    expect(pickSupplementProduct({ id: 'x', price: { amount: 1, currency: 'USD' } }, 'budget5')).toBeNull();
+  });
+
+  it('switches to the premium pick from the $60–$100 tier up', () => {
+    const omega = SUPPLEMENTS.find((s) => s.id === 'omega3');
+    expect(pickSupplementProduct(omega, 'budget2').id).toBe('omega3-nature-made');
+    expect(pickSupplementProduct(omega, 'budget3').id).toBe('omega3-nordic-naturals');
+  });
+
+  it('every catalog supplement has priced picks with a brand and retailers', () => {
+    for (const supplement of SUPPLEMENTS) {
+      expect(supplement.picks.length).toBeGreaterThan(0);
+      for (const pick of supplement.picks) {
+        expect(pick.brand).toBeTruthy();
+        expect(pick.price.amount).toBeGreaterThan(0);
+        expect(pick.retailers.length).toBeGreaterThan(0);
+      }
+    }
   });
 });
 

@@ -1,4 +1,4 @@
-import { COSMETICS } from '../src/data/products';
+import { COSMETICS, SUPPLEMENTS } from '../src/data/products';
 import { buyLinks, RETAILERS, searchQuery } from '../src/domain/retailers';
 
 describe('searchQuery', () => {
@@ -65,6 +65,17 @@ describe('catalog buy links', () => {
   it('only references known retailers', () => {
     COSMETICS.forEach((product) => {
       (product.retailers ?? []).forEach((id) => expect(RETAILERS[id]).toBeDefined());
+    });
+  });
+
+  it('links every supplement pick to Amazon and iHerb searches for brand + name', () => {
+    SUPPLEMENTS.flatMap((s) => s.picks).forEach((pick) => {
+      const links = buyLinks(pick);
+      expect(links.map((l) => l.id).sort()).toEqual(['amazon', 'iherb']);
+      links.forEach((link) => {
+        expect(link.url.startsWith('https://')).toBe(true);
+        expect(decodeURIComponent(link.url)).toContain(pick.brand);
+      });
     });
   });
 });

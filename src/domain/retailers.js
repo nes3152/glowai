@@ -10,6 +10,11 @@ export const RETAILERS = {
     label: 'Amazon',
     searchUrl: (query) => `https://www.amazon.com/s?k=${encodeURIComponent(query)}`,
   },
+  iherb: {
+    id: 'iherb',
+    label: 'iHerb',
+    searchUrl: (query) => `https://www.iherb.com/search?kw=${encodeURIComponent(query)}`,
+  },
   oliveyoung: {
     id: 'oliveyoung',
     label: 'Olive Young',

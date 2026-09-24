@@ -163,6 +163,9 @@ export const COSMETICS = [
  *
  * triggers: lifestyle answers that make the suggestion more relevant.
  * avoidFlags: health answers that remove it entirely.
+ * picks: real products for this supplement, cheapest first; the app picks one
+ *   by budget tier and links to retailer searches for it. `price` is the
+ *   reference price of the value pick.
  */
 export const SUPPLEMENTS = [
   {
@@ -173,6 +176,22 @@ export const SUPPLEMENTS = [
     triggers: ['lowWater', 'lowVeg'],
     avoidFlags: ['bloodThinners', 'fishAllergy'],
     reason: 'Commonly used to support the skin barrier when the diet is low in oily fish.',
+    picks: [
+      {
+        id: 'omega3-nature-made',
+        brand: 'Nature Made',
+        name: 'Fish Oil 1200mg (360mg Omega-3)',
+        price: { amount: 13, currency: 'USD' },
+        retailers: ['amazon', 'iherb'],
+      },
+      {
+        id: 'omega3-nordic-naturals',
+        brand: 'Nordic Naturals',
+        name: 'Ultimate Omega 1280mg',
+        price: { amount: 30, currency: 'USD' },
+        retailers: ['amazon', 'iherb'],
+      },
+    ],
     emoji: '🐟',
   },
   {
@@ -183,6 +202,22 @@ export const SUPPLEMENTS = [
     triggers: ['highStress'],
     avoidFlags: [],
     reason: 'Often paired with acne-prone routines; keep to the label dose.',
+    picks: [
+      {
+        id: 'zinc-now',
+        brand: 'NOW Foods',
+        name: 'Zinc Picolinate 50mg',
+        price: { amount: 8, currency: 'USD' },
+        retailers: ['amazon', 'iherb'],
+      },
+      {
+        id: 'zinc-thorne',
+        brand: 'Thorne',
+        name: 'Zinc Picolinate 30mg',
+        price: { amount: 13, currency: 'USD' },
+        retailers: ['amazon', 'iherb'],
+      },
+    ],
     emoji: '⚪',
   },
   {
@@ -193,6 +228,22 @@ export const SUPPLEMENTS = [
     triggers: ['lowVeg', 'outdoors'],
     avoidFlags: [],
     reason: 'General antioxidant support alongside daily SPF.',
+    picks: [
+      {
+        id: 'vitamin-c-natures-bounty',
+        brand: "Nature's Bounty",
+        name: 'Vitamin C 500mg',
+        price: { amount: 7, currency: 'USD' },
+        retailers: ['amazon', 'iherb'],
+      },
+      {
+        id: 'vitamin-c-garden-of-life',
+        brand: 'Garden of Life',
+        name: 'Vitamin Code Raw Vitamin C',
+        price: { amount: 18, currency: 'USD' },
+        retailers: ['amazon', 'iherb'],
+      },
+    ],
     emoji: '🍊',
   },
   {
@@ -203,6 +254,22 @@ export const SUPPLEMENTS = [
     triggers: ['poorSleep'],
     avoidFlags: ['fishAllergy'],
     reason: 'Popular for elasticity support; evidence is mixed but tolerance is good.',
+    picks: [
+      {
+        id: 'collagen-sports-research',
+        brand: 'Sports Research',
+        name: 'Collagen Peptides Powder',
+        price: { amount: 24, currency: 'USD' },
+        retailers: ['amazon', 'iherb'],
+      },
+      {
+        id: 'collagen-vital-proteins',
+        brand: 'Vital Proteins',
+        name: 'Collagen Peptides Powder',
+        price: { amount: 30, currency: 'USD' },
+        retailers: ['amazon', 'iherb'],
+      },
+    ],
     emoji: '🥤',
   },
 ];

@@ -115,13 +115,38 @@ export function healthNotes(healthFlags = []) {
   return healthFlags.map((flag) => HEALTH_ADVICE[flag]).filter(Boolean);
 }
 
-export function selectSupplements({ scores, lifestyle = [], healthFlags = [], limit = 2 }) {
-  return SUPPLEMENTS.filter((supplement) => isSafeFor(supplement, healthFlags)).map((supplement) => ({
-    supplement,
-    rank:
-      scoreProduct(supplement, scores) +
-      supplement.triggers.filter((trigger) => lifestyle.includes(trigger)).length * 40,
-  }))
+/** Budgets up to this cap get the value pick; above it, the premium pick. */
+export const PREMIUM_PICK_MIN_CAP = 100;
+
+/**
+ * The real product to show for a supplement: cheapest pick for tight budgets,
+ * most expensive pick once the skincare budget is $100+/month. Falls back to
+ * the generic entry (no brand, catalog price) when a supplement has no picks.
+ */
+export function pickSupplementProduct(supplement, budgetId) {
+  const picks = supplement.picks ?? [];
+  if (picks.length === 0) return null;
+  const sorted = [...picks].sort((a, b) => a.price.amount - b.price.amount);
+  return budgetCap(budgetId) >= PREMIUM_PICK_MIN_CAP ? sorted[sorted.length - 1] : sorted[0];
+}
+
+export function selectSupplements({
+  scores,
+  lifestyle = [],
+  healthFlags = [],
+  budgetId,
+  limit = 2,
+}) {
+  return SUPPLEMENTS.filter((supplement) => isSafeFor(supplement, healthFlags))
+    .map((supplement) => {
+      const pick = pickSupplementProduct(supplement, budgetId);
+      return {
+        supplement: pick ? { ...supplement, pick, price: pick.price } : { ...supplement, pick: null },
+        rank:
+          scoreProduct(supplement, scores) +
+          supplement.triggers.filter((trigger) => lifestyle.includes(trigger)).length * 40,
+      };
+    })
     .sort((a, b) => b.rank - a.rank || a.supplement.price.amount - b.supplement.price.amount)
     .slice(0, limit)
     .map((entry) => entry.supplement);
@@ -164,7 +189,12 @@ export function buildRecommendations({
     cosmeticsTotal: routine.total,
     skippedSteps: routine.skippedSteps,
     warnings: routine.warnings,
-    supplements: selectSupplements({ scores: report.scores, lifestyle, healthFlags: allFlags }),
+    supplements: selectSupplements({
+      scores: report.scores,
+      lifestyle,
+      healthFlags: allFlags,
+      budgetId,
+    }),
     devices: selectDevices({ scores: report.scores, healthFlags: allFlags }),
     healthNotes: healthNotes(allFlags),
   };
