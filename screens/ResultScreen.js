@@ -296,17 +296,43 @@ export default function ResultScreen({ route, navigation }) {
             <Text style={styles.sectionSub}>
               General wellness suggestions — not a treatment. Talk to a professional before starting.
             </Text>
-            {supplements.map((supplement) => (
-              <View key={supplement.id} style={styles.productCard}>
-                <View style={styles.productTop}>
-                  <View style={styles.productInfo}>
-                    <Text style={styles.productName}>{supplement.name}</Text>
-                    <Text style={styles.productBrand}>{supplement.reason}</Text>
+            {supplements.map((supplement) => {
+              const pick = supplement.pick ?? null;
+              return (
+                <View key={supplement.id} style={styles.productCard}>
+                  <View style={styles.productTop}>
+                    <View style={styles.productInfo}>
+                      {pick ? (
+                        <>
+                          <Text style={styles.productStep}>{supplement.name}</Text>
+                          <Text style={styles.productName}>{pick.name}</Text>
+                          <Text style={styles.productBrand}>{pick.brand}</Text>
+                        </>
+                      ) : (
+                        <Text style={styles.productName}>{supplement.name}</Text>
+                      )}
+                    </View>
+                    <Text style={styles.productPrice}>{formatPrice(supplement.price)}</Text>
                   </View>
-                  <Text style={styles.productPrice}>{formatPrice(supplement.price)}</Text>
+                  <View style={styles.reasonBox}>
+                    <Text style={styles.reasonText}>{supplement.reason}</Text>
+                  </View>
+                  {pick && (
+                    <View style={styles.buyRow}>
+                      {buyLinks(pick).map((link) => (
+                        <TouchableOpacity
+                          key={link.id}
+                          style={styles.buyButton}
+                          accessibilityRole="link"
+                          onPress={() => openLink(link.url)}>
+                          <Text style={styles.buyText}>Find on {link.label} ↗</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
                 </View>
-              </View>
-            ))}
+              );
+            })}
           </>
         )}
 
