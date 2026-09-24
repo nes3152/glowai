@@ -178,6 +178,17 @@ describe('selectSupplements', () => {
     expect(premium.pick.price.amount).toBeGreaterThan(cheap.pick.price.amount);
   });
 
+  it('breaks relevance ties on the price of the pick actually shown', () => {
+    // zinc and vitamin C tie at zero relevance: generic $9 vs $11, value picks $8 vs $7.
+    const scores = Object.fromEntries(
+      Object.keys(reportFor(['acne']).scores).map((key) => [key, 0])
+    );
+    const cheap = selectSupplements({ scores, budgetId: 'budget1', limit: 4 });
+    const prices = cheap.map((s) => s.price.amount);
+    expect(prices).toEqual([...prices].sort((a, b) => a - b));
+    expect(cheap[0].id).toBe('vitamin-c');
+  });
+
   it('treats a missing budget as unlimited, like the routine does', () => {
     const [picked] = selectSupplements({ scores: reportFor(['acne']).scores, limit: 1 });
     const priciest = Math.max(

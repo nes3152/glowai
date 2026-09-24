@@ -137,20 +137,19 @@ export function selectSupplements({
   budgetId,
   limit = 2,
 }) {
-  return SUPPLEMENTS.filter((supplement) => isSafeFor(supplement, healthFlags)).map((supplement) => ({
-    supplement,
-    rank:
-      scoreProduct(supplement, scores) +
-      supplement.triggers.filter((trigger) => lifestyle.includes(trigger)).length * 40,
-  }))
+  return SUPPLEMENTS.filter((supplement) => isSafeFor(supplement, healthFlags))
+    .map((supplement) => {
+      const pick = pickSupplementProduct(supplement, budgetId);
+      return {
+        supplement: pick ? { ...supplement, pick, price: pick.price } : { ...supplement, pick: null },
+        rank:
+          scoreProduct(supplement, scores) +
+          supplement.triggers.filter((trigger) => lifestyle.includes(trigger)).length * 40,
+      };
+    })
     .sort((a, b) => b.rank - a.rank || a.supplement.price.amount - b.supplement.price.amount)
     .slice(0, limit)
-    .map((entry) => {
-      const pick = pickSupplementProduct(entry.supplement, budgetId);
-      return pick
-        ? { ...entry.supplement, pick, price: pick.price }
-        : { ...entry.supplement, pick: null };
-    });
+    .map((entry) => entry.supplement);
 }
 
 export function selectDevices({ scores, healthFlags = [], limit = 2 }) {
